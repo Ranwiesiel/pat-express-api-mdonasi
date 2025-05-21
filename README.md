@@ -2,12 +2,12 @@
 
 ## Deskripsi
 
-API MDonasi adalah layanan API yang memungkinkan pengguna untuk mengelola transaksi donasi digital. API ini menyediakan endpoint untuk membuat, melihat, mengubah, dan menghapus data donasi, serta fitur untuk validasi donasi, riwayat donasi, dan melacak riwayat akses API.
+API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi. API ini menyediakan endpoint untuk membuat, melihat, mengubah, dan menghapus data donasi, serta fitur untuk validasi donasi, riwayat donasi, dan melacak riwayat akses API.
 
 ## Base URL
 
 ```
-http://localhost:3000/api
+http://url-api/api
 ```
 
 ## Database Schema
@@ -15,6 +15,7 @@ http://localhost:3000/api
 ![Database Schema](./img/database.png)
 
 Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
+
 - **tb_donasi**: Menyimpan data donasi seperti nama donatur, email, nominal, dll
 - **tb_validasi_donasi**: Menyimpan data validasi untuk setiap donasi
 - **tb_riwayat_donasi**: Mencatat setiap perubahan status donasi
@@ -34,12 +35,11 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
 ```json
 {
-  "nama_donatur": "Budi Santoso",
-  "email": "budi@example.com",
-  "nominal": 100000,
-  "metode_pembayaran": "transfer_bank",
-  "komentar": "Semoga bermanfaat",
-  "status": "pending"
+  "userid": "{userid}",
+  "type": "money",
+  "qty": 100000,
+  "unit": "rupiah",
+  "keterangan": "Semoga bermanfaat",
 }
 ```
 
@@ -54,12 +54,12 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "message": "Donasi berhasil dibuat",
   "data": {
     "id": 1,
-    "nama_donatur": "Budi Santoso",
-    "email": "budi@example.com",
-    "nominal": 100000,
-    "metode_pembayaran": "transfer_bank",
-    "komentar": "Semoga bermanfaat",
-    "status": "pending",
+    "userid": "{userid}",
+    "type": "money",
+    "qty": 100000,
+    "unit": "rupiah",
+    "keterangan": "Semoga bermanfaat",
+    "status": "need validation",
     "created_at": "2025-05-21T14:30:00.000Z"
   }
 }
@@ -90,7 +90,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
 - `page` (optional): Halaman yang ingin ditampilkan (default: 1)
 - `limit` (optional): Jumlah data per halaman (default: 10)
-- `status` (optional): Filter berdasarkan status donasi ('pending', 'success', 'failed')
+- `status` (optional): Filter berdasarkan status donasi ('need_validation','pending', 'success', 'failed','taken')
 
 ##### Response Success
 
@@ -100,25 +100,25 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ```json
 {
   "success": true,
-  "message": "Daftar donasi berhasil diambil",
+  "message": "Daftar donasi",
   "data": [
     {
       "id": 1,
-      "nama_donatur": "Budi Santoso",
-      "email": "budi@example.com",
-      "nominal": 100000,
-      "metode_pembayaran": "transfer_bank",
-      "komentar": "Semoga bermanfaat",
+      "userid": "{userid}",
+      "type": "money",
+      "qty": 100000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
       "status": "success",
       "created_at": "2025-05-21T14:30:00.000Z"
     },
     {
       "id": 2,
-      "nama_donatur": "Siti Rahma",
-      "email": "siti@example.com",
-      "nominal": 50000,
-      "metode_pembayaran": "e-wallet",
-      "komentar": "Untuk kebaikan bersama",
+      "userid": "{userid}",
+      "type": "barang",
+      "qty": 10,
+      "unit": "dus",
+      "keterangan": "baju, celana, selimut",
       "status": "pending",
       "created_at": "2025-05-21T15:45:00.000Z"
     }
@@ -135,7 +135,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 #### 3. Mendapatkan Donasi Berdasarkan ID
 
 - **Method:** GET
-- **Path:** `/donasi/:id`
+- **Path:** `/donasi/{idDonasi}`
 
 ##### Response Success
 
@@ -148,11 +148,11 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "message": "Donasi berhasil ditemukan",
   "data": {
     "id": 1,
-    "nama_donatur": "Budi Santoso",
-    "email": "budi@example.com",
-    "nominal": 100000,
-    "metode_pembayaran": "transfer_bank",
-    "komentar": "Semoga bermanfaat",
+    "userid": "{userid}",
+    "type": "money",
+    "qty": 100000,
+    "unit": "rupiah",
+    "keterangan": "Semoga bermanfaat",
     "status": "success",
     "created_at": "2025-05-21T14:30:00.000Z"
   }
@@ -171,19 +171,10 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-#### 4. Memperbarui Status Donasi
+#### 4. Mendapatkan Donasi Berdasarkan ID User
 
-- **Method:** PATCH
-- **Path:** `/donasi/:id`
-- **Content-Type:** application/json
-
-##### Request Body
-
-```json
-{
-  "status": "success"
-}
-```
+- **Method:** GET
+- **Path:** `/donasi/user/{userID}`
 
 ##### Response Success
 
@@ -193,25 +184,48 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ```json
 {
   "success": true,
-  "message": "Status donasi berhasil diperbarui",
+  "message": "Donasi berhasil ditemukan",
   "data": {
-    "id": 1,
-    "nama_donatur": "Budi Santoso",
-    "email": "budi@example.com",
-    "nominal": 100000,
-    "metode_pembayaran": "transfer_bank",
-    "komentar": "Semoga bermanfaat",
-    "status": "success",
-    "created_at": "2025-05-21T14:30:00.000Z",
-    "updated_at": "2025-05-21T16:20:00.000Z"
+    {
+      "id": 1,
+      "userid": "{userid}",
+      "type": "money",
+      "qty": 100000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
+      "status": "success",
+      "created_at": "2025-05-21T14:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "userid": "{userid}",
+      "type": "barang",
+      "qty": 10,
+      "unit": "dus",
+      "keterangan": "baju, celana, selimut",
+      "status": "pending",
+      "created_at": "2025-05-21T15:45:00.000Z"
+    }
   }
+}
+```
+
+##### Response Error
+
+- **Status Code:** 404 Not Found
+- **Content-Type:** application/json
+
+```json
+{
+  "success": false,
+  "message": "Donasi dengan user id 999 tidak ditemukan"
 }
 ```
 
 #### 5. Menghapus Data Donasi
 
 - **Method:** DELETE
-- **Path:** `/donasi/:id`
+- **Path:** `/donasi/{idDonasi}`
 
 ##### Response Success
 
@@ -237,12 +251,68 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
+#### 6. Mengubah data donasi
+
+- **Method:** PUT
+- **Path:** `/donasi/{idDonasi}`
+- **Content-Type:** application/json
+
+##### Request Body
+
+```json
+{
+  "userid": "{userid}",
+  "type": "money",
+  "qty": 100000,
+  "unit": "rupiah",
+  "keterangan": "Semoga bermanfaat",
+}
+```
+
+##### Response Success
+
+- **Status Code:** 201 Created
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Donasi berhasil ubah",
+  "data": {
+    "id": 1,
+    "userid": "{userid}",
+    "type": "money",
+    "qty": 100000,
+    "unit": "rupiah",
+    "keterangan": "Semoga bermanfaat",
+    "status": "need validation",
+    "created_at": "2025-05-21T14:30:00.000Z"
+  }
+}
+```
+
+##### Response Error
+
+- **Status Code:** 400 Bad Request
+- **Content-Type:** application/json
+
+```json
+{
+  "success": false,
+  "message": "Data donasi tidak lengkap",
+  "errors": [
+    "Nama donatur harus diisi",
+    "Nominal harus berupa angka"
+  ]
+}
+```
+
 ### Validasi Donasi
 
-#### 1. Membuat Validasi Donasi
+#### 1. Donatur Membuat Validasi Donasi
 
 - **Method:** POST
-- **Path:** `/validasi-donasi`
+- **Path:** `/validasi-donasi/{idDonasi}`
 - **Content-Type:** application/json
 
 ##### Request Body
@@ -252,7 +322,6 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "id_donasi": 1,
   "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
   "catatan_validasi": "Pembayaran sudah masuk",
-  "status_validasi": "valid"
 }
 ```
 
@@ -270,23 +339,43 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     "id_donasi": 1,
     "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
     "catatan_validasi": "Pembayaran sudah masuk",
-    "status_validasi": "valid",
+    "status_validasi": "pending",
     "validator": "Admin",
     "created_at": "2025-05-21T16:30:00.000Z"
   }
 }
+
+{
+  "success": true,
+  "message": "Validasi donasi berhasil dibuat",
+  "data": {
+    "id": 1,
+    "id_donasi": 1,
+    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+    "catatan_validasi": "Pembayaran sudah masuk",
+    "status_validasi": "accepted",
+    "validator": "Admin",
+    "created_at": "2025-06-21T16:30:00.000Z"
+  }
+}
 ```
 
-#### 2. Mendapatkan Daftar Validasi Donasi
+#### 2. Admin memvalidasi donasi
 
-- **Method:** GET
-- **Path:** `/validasi-donasi`
+- **Method:** PUT
+- **Path:** `/validasi-donasi/admin/{idDonasi}`
+- **Content-Type:** application/json
 
-##### Query Parameters
+##### Request Body
 
-- `page` (optional): Halaman yang ingin ditampilkan (default: 1)
-- `limit` (optional): Jumlah data per halaman (default: 10)
-- `status_validasi` (optional): Filter berdasarkan status validasi ('valid', 'invalid', 'pending')
+```json
+{
+  "id_validasi": "{id_validasi}",
+  "status_validasi": "accepted / rejected",
+  "catatan_validasi": "Pembayaran sudah dikonfirmasi",
+  "validator": "Admin"
+}
+```
 
 ##### Response Success
 
@@ -296,40 +385,23 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ```json
 {
   "success": true,
-  "message": "Daftar validasi donasi berhasil diambil",
+  "message": "Berhasil di validasi",
   "data": [
-    {
-      "id": 1,
-      "id_donasi": 1,
-      "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-      "catatan_validasi": "Pembayaran sudah masuk",
-      "status_validasi": "valid",
-      "validator": "Admin",
-      "created_at": "2025-05-21T16:30:00.000Z"
-    },
-    {
-      "id": 2,
-      "id_donasi": 2,
-      "bukti_pembayaran": "https://example.com/bukti-transfer2.jpg",
-      "catatan_validasi": "Menunggu konfirmasi bank",
-      "status_validasi": "pending",
-      "validator": "Admin",
-      "created_at": "2025-05-21T16:45:00.000Z"
-    }
+    "id": 1,
+    "id_donasi": 1,
+    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+    "catatan_validasi": "Pembayaran sudah masuk",
+    "status_validasi": "valid",
+    "validator": "Admin",
+    "created_at": "2025-05-21T16:30:00.000Z"
   ],
-  "pagination": {
-    "current_page": 1,
-    "total_pages": 3,
-    "total_items": 25,
-    "limit": 10
-  }
 }
 ```
 
 #### 3. Mendapatkan Detail Validasi Donasi
 
 - **Method:** GET
-- **Path:** `/validasi-donasi/:id`
+- **Path:** `/validasi-donasi/{idDonasi}`
 
 ##### Response Success
 
@@ -350,59 +422,23 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     "created_at": "2025-05-21T16:30:00.000Z",
     "donasi": {
       "id": 1,
-      "nama_donatur": "Budi Santoso",
-      "email": "budi@example.com",
-      "nominal": 100000,
-      "metode_pembayaran": "transfer_bank",
+      "userid": "{userid}",
+      "type": "money",
+      "qty": 100000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
       "status": "success"
     }
   }
 }
 ```
 
-#### 4. Memperbarui Status Validasi
-
-- **Method:** PATCH
-- **Path:** `/validasi-donasi/:id`
-- **Content-Type:** application/json
-
-##### Request Body
-
-```json
-{
-  "status_validasi": "valid",
-  "catatan_validasi": "Pembayaran sudah dikonfirmasi"
-}
-```
-
-##### Response Success
-
-- **Status Code:** 200 OK
-- **Content-Type:** application/json
-
-```json
-{
-  "success": true,
-  "message": "Status validasi berhasil diperbarui",
-  "data": {
-    "id": 1,
-    "id_donasi": 1,
-    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-    "catatan_validasi": "Pembayaran sudah dikonfirmasi",
-    "status_validasi": "valid",
-    "validator": "Admin",
-    "created_at": "2025-05-21T16:30:00.000Z",
-    "updated_at": "2025-05-21T17:20:00.000Z"
-  }
-}
-```
-
 ### Riwayat Donasi
 
-#### 1. Mendapatkan Riwayat Donasi
+#### 1. Mendapatkan Semua Riwayat Donasi (Admin)
 
 - **Method:** GET
-- **Path:** `/riwayat-donasi`
+- **Path:** `donasi/riwayat-donasi/admin`
 
 ##### Query Parameters
 
@@ -421,21 +457,87 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "message": "Riwayat donasi berhasil diambil",
   "data": [
     {
-      "id": 1,
-      "id_donasi": 1,
-      "status_sebelumnya": "pending",
-      "status_terbaru": "success",
-      "keterangan": "Donasi telah divalidasi",
-      "created_at": "2025-05-21T17:30:00.000Z"
+      "userid" : 1,
+      "data": [
+        {
+          "id": 1,
+          "userid": "{userid}",
+          "type": "money",
+          "qty": 100000,
+          "unit": "rupiah",
+          "keterangan": "Semoga bermanfaat",
+          "status" : {
+             "id": 1,
+              "id_donasi": 1,
+              "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+              "catatan_validasi": "Pembayaran sudah masuk",
+              "status_validasi": "pending",
+              "validator": "Admin",
+              "created_at": "2025-05-21T16:30:00.000Z"
+          },
+          "created_at": "2025-05-21T14:30:00.000Z"
+        },
+        {
+          "id": 2,
+          "userid": "{userid}",
+          "type": "barang",
+          "qty": 10,
+          "unit": "dus",
+          "keterangan": "baju, celana, selimut",
+          "status" : {
+             "id": 1,
+              "id_donasi": 1,
+              "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+              "catatan_validasi": "Pembayaran sudah masuk",
+              "status_validasi": "pending",
+              "validator": "Admin",
+              "created_at": "2025-05-21T16:30:00.000Z"
+          },
+          "created_at": "2025-05-21T15:45:00.000Z"
+        }
+      ]
     },
-    {
-      "id": 2,
-      "id_donasi": 2,
-      "status_sebelumnya": "pending",
-      "status_terbaru": "failed",
-      "keterangan": "Pembayaran tidak valid",
-      "created_at": "2025-05-21T17:45:00.000Z"
-    }
+     {
+      "userid" : 2,
+      "data": [
+        {
+          "id": 1,
+          "userid": "{userid}",
+          "type": "money",
+          "qty": 100000,
+          "unit": "rupiah",
+          "keterangan": "Semoga bermanfaat",
+          "status" : {
+             "id": 1,
+              "id_donasi": 1,
+              "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+              "catatan_validasi": "Pembayaran sudah masuk",
+              "status_validasi": "pending",
+              "validator": "Admin",
+              "created_at": "2025-05-21T16:30:00.000Z"
+          },
+          "created_at": "2025-05-21T14:30:00.000Z"
+        },
+        {
+          "id": 2,
+          "userid": "{userid}",
+          "type": "barang",
+          "qty": 10,
+          "unit": "dus",
+          "keterangan": "baju, celana, selimut",
+           "status" : {
+             "id": 1,
+              "id_donasi": 1,
+              "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+              "catatan_validasi": "Pembayaran sudah masuk",
+              "status_validasi": "pending",
+              "validator": "Admin",
+              "created_at": "2025-05-21T16:30:00.000Z"
+          },
+          "created_at": "2025-05-21T15:45:00.000Z"
+        }
+      ]
+    },
   ],
   "pagination": {
     "current_page": 1,
@@ -446,10 +548,10 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-#### 2. Mendapatkan Riwayat Donasi Berdasarkan ID Donasi
+#### 2. Mendapatkan Riwayat Donasi Berdasarkan ID User
 
 - **Method:** GET
-- **Path:** `/riwayat-donasi/donasi/:id_donasi`
+- **Path:** `/riwayat-donasi/{userId}`
 
 ##### Response Success
 
@@ -460,22 +562,43 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 {
   "success": true,
   "message": "Riwayat donasi berhasil diambil",
+  "userid" : 1,
   "data": [
     {
       "id": 1,
-      "id_donasi": 1,
-      "status_sebelumnya": "created",
-      "status_terbaru": "pending",
-      "keterangan": "Donasi telah dibuat",
+      "userid": "{userid}",
+      "type": "money",
+      "qty": 100000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
+      "status" : {
+          "id": 1,
+          "id_donasi": 1,
+          "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+          "catatan_validasi": "Pembayaran sudah masuk",
+          "status_validasi": "pending",
+          "validator": "Admin",
+          "created_at": "2025-05-21T16:30:00.000Z"
+      },
       "created_at": "2025-05-21T14:30:00.000Z"
     },
     {
-      "id": 3,
-      "id_donasi": 1,
-      "status_sebelumnya": "pending",
-      "status_terbaru": "success",
-      "keterangan": "Donasi telah divalidasi",
-      "created_at": "2025-05-21T17:30:00.000Z"
+      "id": 2,
+      "userid": "{userid}",
+      "type": "barang",
+      "qty": 10,
+      "unit": "dus",
+      "keterangan": "baju, celana, selimut",
+      "status" : {
+          "id": 1,
+          "id_donasi": 1,
+          "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+          "catatan_validasi": "Pembayaran sudah masuk",
+          "status_validasi": "pending",
+          "validator": "Admin",
+          "created_at": "2025-05-21T16:30:00.000Z"
+      },
+      "created_at": "2025-05-21T15:45:00.000Z"
     }
   ]
 }
@@ -537,19 +660,19 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
 ## Tampilan CRUD Donasi
 
-![CRUD Donasi](./img/crud-donasi.png)
+<!-- ![CRUD Donasi](./img/crud-donasi.png) -->
 
 ## Tampilan Validasi Donasi
 
-![Validasi Donasi](./img/validasi-donasi.png)
+<!-- ![Validasi Donasi](./img/validasi-donasi.png) -->
 
 ## Tampilan Riwayat Donasi
 
-![Riwayat Donasi](./img/riwayat-donasi.png)
+<!-- ![Riwayat Donasi](./img/riwayat-donasi.png) -->
 
 ## Tampilan Riwayat Akses API
 
-![Riwayat Akses API](./img/riwayat-access-api.png)
+<!-- ![Riwayat Akses API](./img/riwayat-access-api.png) -->
 
 ## Status Kode
 
@@ -563,24 +686,13 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 | 404 | Not Found - Resource tidak ditemukan |
 | 500 | Internal Server Error - Kesalahan pada server |
 
-## Metode Pembayaran yang Didukung
-
-- `transfer_bank` - Transfer Bank
-- `e-wallet` - E-Wallet (OVO, GoPay, DANA, dll)
-- `qris` - QRIS
-- `virtual_account` - Virtual Account
-
 ## Status Donasi
 
-- `pending` - Menunggu pembayaran
-- `success` - Donasi berhasil
+- `need_validation` - Menunggu user mengirimkan validasi
+- `pending` - Menunggu validasi dari admin
+- `success` - Donasi berhasil di validasi admin
 - `failed` - Donasi gagal
-
-## Status Validasi
-
-- `pending` - Menunggu validasi
-- `valid` - Bukti pembayaran valid
-- `invalid` - Bukti pembayaran tidak valid
+- `taken` - Donasi telah diambil penerima
 
 ## Struktur Database
 
@@ -589,12 +701,11 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 | Field | Tipe | Deskripsi |
 |-------|------|-----------|
 | id | INT | Primary Key, Auto Increment |
-| nama_donatur | VARCHAR(100) | Nama pemberi donasi |
-| email | VARCHAR(100) | Email pemberi donasi |
-| nominal | DECIMAL(15,2) | Jumlah nominal donasi |
-| metode_pembayaran | VARCHAR(50) | Metode pembayaran yang digunakan |
-| komentar | TEXT | Komentar atau pesan dari donatur |
-| status | VARCHAR(20) | Status donasi (pending, success, failed) |
+| keterangan | VARCHAR(100) | Keterangan isi donasi |
+| userid | BASED ON MODUL 1 | id donatur |
+| qty | INT | Jumlah quantity donasi |
+| unit | VARCHAR(100) | unit donasi (rupiah/pcs/dus ..dst) |
+| type | ENUM(uang/barang) | Tipe donasi |
 | created_at | TIMESTAMP | Waktu pembuatan data donasi |
 | updated_at | TIMESTAMP | Waktu terakhir pembaruan data donasi |
 
@@ -606,21 +717,10 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 | id_donasi | INT | Foreign Key ke tabel tb_donasi |
 | bukti_pembayaran | VARCHAR(255) | URL bukti pembayaran |
 | catatan_validasi | TEXT | Catatan dari validator |
-| status_validasi | VARCHAR(20) | Status validasi (pending, valid, invalid) |
+| status | ENUM(need_validation, pending, accepted, rejected, taken) | Status dari donasi |
 | validator | VARCHAR(100) | Nama validator |
 | created_at | TIMESTAMP | Waktu pembuatan data validasi |
 | updated_at | TIMESTAMP | Waktu terakhir pembaruan data validasi |
-
-### Tabel tb_riwayat_donasi
-
-| Field | Tipe | Deskripsi |
-|-------|------|-----------|
-| id | INT | Primary Key, Auto Increment |
-| id_donasi | INT | Foreign Key ke tabel tb_donasi |
-| status_sebelumnya | VARCHAR(20) | Status donasi sebelum perubahan |
-| status_terbaru | VARCHAR(20) | Status donasi setelah perubahan |
-| keterangan | TEXT | Keterangan perubahan status |
-| created_at | TIMESTAMP | Waktu pembuatan riwayat |
 
 ### Tabel tb_akses_api
 
