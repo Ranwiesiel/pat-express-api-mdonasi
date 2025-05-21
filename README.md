@@ -12,7 +12,16 @@ http://url-api/api
 
 ## Database Schema
 
-![Database Schema](./img/database.png)
+```
+butuh tabel sql
+```
+<!-- ![Database Schema](./img/database.png) -->
+
+## ERD
+
+```
+butuh ERD
+```
 
 Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
