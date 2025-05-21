@@ -6,20 +6,20 @@ API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi
 
 ## Base URL
 
-```
+```text
 http://url-api/api
 ```
 
 ## Database Schema
 
-```
+```text
 butuh tabel sql
 ```
 <!-- ![Database Schema](./img/database.png) -->
 
 ## ERD
 
-```
+```text
 butuh ERD
 ```
 
