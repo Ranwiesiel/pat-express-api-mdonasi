@@ -27,7 +27,6 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
 - **tb_donasi**: Menyimpan data donasi seperti nama donatur, email, nominal, dll
 - **tb_validasi_donasi**: Menyimpan data validasi untuk setiap donasi
-- **tb_riwayat_donasi**: Mencatat setiap perubahan status donasi
 - **tb_akses_api**: Mencatat semua akses ke API
 
 ## Endpoints
