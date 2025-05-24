@@ -1,18 +1,26 @@
 {
   "name": "express-api-mdonasi",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-  "keywords": [],
+  "keywords": [
+    "api",
+    "donasi",
+    "express",
+    "mysql",
+    "jwt"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "API untuk sistem manajemen donasi dengan validasi JWT token",
   "dependencies": {
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
