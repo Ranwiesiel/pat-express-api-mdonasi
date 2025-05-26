@@ -10,13 +10,6 @@ API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi
 http://url-api/api
 ```
 
-## Database Schema
-
-```text
-butuh tabel sql
-```
-<!-- ![Database Schema](./img/database.png) -->
-
 ## ERD
 
 ![ERD Database](img/ERD_PAT.png)
@@ -42,7 +35,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ```json
 {
   "userid": "{userid}",
-  "type": "money",
+  "type": "uang",
   "qty": 100000,
   "unit": "rupiah",
   "keterangan": "Semoga bermanfaat",
@@ -61,7 +54,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "data": {
     "id": 1,
     "userid": "{userid}",
-    "type": "money",
+    "type": "uang",
     "qty": 100000,
     "unit": "rupiah",
     "keterangan": "Semoga bermanfaat",
@@ -111,7 +104,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     {
       "id": 1,
       "userid": "{userid}",
-      "type": "money",
+      "type": "uang",
       "qty": 100000,
       "unit": "rupiah",
       "keterangan": "Semoga bermanfaat",
@@ -155,7 +148,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "data": {
     "id": 1,
     "userid": "{userid}",
-    "type": "money",
+    "type": "uang",
     "qty": 100000,
     "unit": "rupiah",
     "keterangan": "Semoga bermanfaat",
@@ -177,7 +170,90 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-#### 4. Mendapatkan Donasi Berdasarkan ID User
+#### 4. Mendapatkan Donasi Berdasarkan Type donasi
+
+- **Method:** GET
+- **Path:** `/donasi/type/{uang/barang}`
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+
+{
+"success": true,
+"message": "Daftar donasi dengan tipe uang",
+"data": [
+  {
+    "id": 12,
+    "keterangan": "Donasi uang tunai",
+    "userid": 1,
+    "qty": 500000,
+    "unit": "rupiah",
+    "type": "uang",
+    "created_at": "2025-05-26T05:47:47.000Z",
+    "updated_at": "2025-05-26T05:47:47.000Z",
+    "status_validasi": null
+  }],
+  "pagination": {
+  "current_page": 1,
+  "total_pages": 1,
+  "total_items": 6,
+  "limit": 10
+}
+}
+```
+
+#### 5. Mendapatkan Donasi Berdasarkan Status Donasi
+
+- **Method:** GET
+- **Path:** `/donasi/status/{need_validation/pending/accepted/rejected/taken}`
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Daftar donasi dengan status accepted",
+  "data": [
+    {
+      "id": 7,
+      "keterangan": "Donasi uang pembangunan",
+      "userid": 7,
+      "qty": 2000000,
+      "unit": "rupiah",
+      "type": "uang",
+      "created_at": "2025-05-24T07:17:38.000Z",
+      "updated_at": "2025-05-24T07:17:38.000Z",
+      "status_validasi": "accepted"
+    },
+    {
+      "id": 1,
+      "keterangan": "Donasi uang tunai",
+      "userid": 1,
+      "qty": 500000,
+      "unit": "rupiah",
+      "type": "uang",
+      "created_at": "2025-05-24T07:17:38.000Z",
+      "updated_at": "2025-05-24T07:17:38.000Z",
+      "status_validasi": "accepted"
+    },
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 1,
+    "total_items": 5,
+    "limit": 10
+  }
+}
+```
+
+#### 6. Mendapatkan Donasi Berdasarkan ID User
 
 - **Method:** GET
 - **Path:** `/donasi/user/{userID}`
@@ -195,7 +271,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     {
       "id": 1,
       "userid": "{userid}",
-      "type": "money",
+      "type": "uang",
       "qty": 100000,
       "unit": "rupiah",
       "keterangan": "Semoga bermanfaat",
@@ -228,7 +304,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-#### 5. Menghapus Data Donasi
+#### 7. Menghapus Data Donasi
 
 - **Method:** DELETE
 - **Path:** `/donasi/{idDonasi}`
@@ -257,7 +333,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-#### 6. Mengubah data donasi
+#### 8. Mengubah data donasi
 
 - **Method:** PUT
 - **Path:** `/donasi/{idDonasi}`
@@ -268,7 +344,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ```json
 {
   "userid": "{userid}",
-  "type": "money",
+  "type": "uang",
   "qty": 100000,
   "unit": "rupiah",
   "keterangan": "Semoga bermanfaat",
@@ -287,7 +363,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   "data": {
     "id": 1,
     "userid": "{userid}",
-    "type": "money",
+    "type": "uang",
     "qty": 100000,
     "unit": "rupiah",
     "keterangan": "Semoga bermanfaat",
@@ -397,7 +473,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     "id_donasi": 1,
     "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
     "catatan_validasi": "Pembayaran sudah masuk",
-    "status_validasi": "valid",
+    "status_validasi": "accepted",
     "validator": "Admin",
     "created_at": "2025-05-21T16:30:00.000Z"
   ],
@@ -429,7 +505,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     "donasi": {
       "id": 1,
       "userid": "{userid}",
-      "type": "money",
+      "type": "uang",
       "qty": 100000,
       "unit": "rupiah",
       "keterangan": "Semoga bermanfaat",
@@ -468,7 +544,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
         {
           "id": 1,
           "userid": "{userid}",
-          "type": "money",
+          "type": "uang",
           "qty": 100000,
           "unit": "rupiah",
           "keterangan": "Semoga bermanfaat",
@@ -509,7 +585,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
         {
           "id": 1,
           "userid": "{userid}",
-          "type": "money",
+          "type": "uang",
           "qty": 100000,
           "unit": "rupiah",
           "keterangan": "Semoga bermanfaat",
@@ -573,7 +649,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
     {
       "id": 1,
       "userid": "{userid}",
-      "type": "money",
+      "type": "uang",
       "qty": 100000,
       "unit": "rupiah",
       "keterangan": "Semoga bermanfaat",
@@ -697,8 +773,8 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 - `need_validation` - Menunggu user mengirimkan validasi
 - `pending` - Menunggu validasi dari admin
 - `success` - Donasi berhasil di validasi admin
-- `failed` - Donasi gagal
-- `taken` - Donasi telah diambil penerima
+- `rejected` - Donasi gagal
+- `taken` - Donasi telah diambil
 
 ## Struktur Database
 
