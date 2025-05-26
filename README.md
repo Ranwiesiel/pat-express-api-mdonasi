@@ -19,9 +19,7 @@ butuh tabel sql
 
 ## ERD
 
-```text
-butuh ERD
-```
+![ERD Database](img/ERD_PAT.png)
 
 Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 

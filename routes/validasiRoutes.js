@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ValidasiDonasiModel = require('../models/validasiDonasi');
 const DonasiModel = require('../models/donasi');
-const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
+const { verifyAdmin } = require('../middleware/authMiddleware');
 const { 
   validateValidasiInput, 
   validateAdminValidasiInput,
@@ -11,7 +11,7 @@ const {
 } = require('../utils/validation');
 
 // POST /api/validasi-donasi/:idDonasi - Donatur membuat validasi donasi
-router.post('/:idDonasi', verifyToken, async (req, res) => {
+router.post('/:idDonasi', async (req, res) => {
   try {
     const idDonasi = req.params.idDonasi;
     
@@ -46,7 +46,7 @@ router.post('/:idDonasi', verifyToken, async (req, res) => {
 });
 
 // PUT /api/validasi-donasi/admin/:idDonasi - Admin memvalidasi donasi
-router.put('/admin/:idDonasi', verifyToken, verifyAdmin, async (req, res) => {
+router.put('/admin/:idDonasi', verifyAdmin, async (req, res) => {
   try {
     const idDonasi = req.params.idDonasi;
     
@@ -75,7 +75,7 @@ router.put('/admin/:idDonasi', verifyToken, verifyAdmin, async (req, res) => {
 });
 
 // GET /api/validasi-donasi/:idDonasi - Mendapatkan detail validasi donasi
-router.get('/:idDonasi', verifyToken, async (req, res) => {
+router.get('/:idDonasi', async (req, res) => {
   try {
     const validasi = await ValidasiDonasiModel.getByDonasiId(req.params.idDonasi);
     

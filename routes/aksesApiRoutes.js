@@ -5,7 +5,7 @@ const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 const { successResponse, errorResponse } = require('../utils/validation');
 
 // GET /api/akses-api - Mendapatkan riwayat akses API (Admin only)
-router.get('/', verifyToken, verifyAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;

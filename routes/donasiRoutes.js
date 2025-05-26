@@ -92,7 +92,7 @@ router.get('/:id',  async (req, res) => {
 });
 
 // PUT /api/donasi/:id - Mengubah data donasi
-router.put('/:id',  async (req, res) => {
+router.put('/:id', verifyAdmin,  async (req, res) => {
   try {
     const errors = validateDonasiInput(req.body);
     if (errors.length > 0) {
@@ -118,7 +118,7 @@ router.put('/:id',  async (req, res) => {
 });
 
 // DELETE /api/donasi/:id - Menghapus donasi
-router.delete('/:id',  async (req, res) => {
+router.delete('/:id', verifyAdmin,  async (req, res) => {
   try {
     const existing = await DonasiModel.getById(req.params.id);
     if (!existing) {

@@ -5,7 +5,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 const { successResponse, errorResponse } = require('../utils/validation');
 
 // GET /api/riwayat-donasi/:userId - Mendapatkan riwayat donasi berdasarkan user ID
-router.get('/:userId', verifyToken, async (req, res) => {
+router.get('/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
     const riwayat = await DonasiModel.getRiwayatByUserId(userId);
