@@ -61,6 +61,7 @@ router.get('/user/:userId',  async (req, res) => {
   }
 });
 
+
 // GET /api/donasi/riwayat-donasi/admin - Mendapatkan semua riwayat donasi (Admin)
 router.get('/riwayat-donasi/admin',  verifyAdmin, async (req, res) => {
   try {
@@ -90,6 +91,39 @@ router.get('/:id',  async (req, res) => {
     res.status(500).json(errorResponse('Terjadi kesalahan server'));
   }
 });
+
+// GET /api/donasi/status/:status - Mendapatkan donasi berdasarkan status
+router.get('/status/:status',  async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const status = req.params.status;
+
+    const result = await DonasiModel.getByStatus(status, page, limit);
+    res.status(200).json(successResponse(`Daftar donasi dengan status ${status}`, result.data, result.pagination));
+  } catch (error) {
+    console.error('Error getting donasi by status:', error);
+    res.status(500).json(errorResponse('Terjadi kesalahan server'));
+  }
+});
+
+// GET /api/donasi/type/:type - Mendapatkan donasi berdasarkan tipe
+router.get('/type/:type',  async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const type = req.params.type;
+
+    const result = await DonasiModel.getByType(type, page, limit);
+    res.status(200).json(successResponse(`Daftar donasi dengan tipe ${type}`, result.data, result.pagination));
+  } catch (error) {
+    console.error('Error getting donasi by type:', error);
+    res.status(500).json(errorResponse('Terjadi kesalahan server'));
+  }
+});
+
+
+
 
 // PUT /api/donasi/:id - Mengubah data donasi
 router.put('/:id', verifyAdmin,  async (req, res) => {

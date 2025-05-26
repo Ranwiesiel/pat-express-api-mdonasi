@@ -68,6 +68,64 @@ class DonasiModel {
     return rows[0];
   }
 
+  static async getByType(type, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const query = `
+      SELECT d.*, v.status as status_validasi 
+      FROM tb_donasi d 
+      LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi 
+      WHERE d.type = ? 
+      ORDER BY d.created_at DESC 
+      LIMIT ? OFFSET ?
+    `;
+    
+    const [rows] = await pool.execute(query, [type, limit, offset]);
+
+    // Count total untuk pagination
+    const countQuery = 'SELECT COUNT(*) as total FROM tb_donasi WHERE type = ?';
+    const [countResult] = await pool.execute(countQuery, [type]);
+    const total = countResult[0].total;
+
+    return {
+      data: rows,
+      pagination: {
+        current_page: page,
+        total_pages: Math.ceil(total / limit),
+        total_items: total,
+        limit: limit
+      }
+    };
+  }
+
+  static async getByStatus(status, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const query = `
+      SELECT d.*, v.status as status_validasi 
+      FROM tb_donasi d 
+      LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi 
+      WHERE v.status = ? 
+      ORDER BY d.created_at DESC 
+      LIMIT ? OFFSET ?
+    `;
+    
+    const [rows] = await pool.execute(query, [status, limit, offset]);
+
+    // Count total untuk pagination
+    const countQuery = 'SELECT COUNT(*) as total FROM tb_donasi d LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi WHERE v.status = ?';
+    const [countResult] = await pool.execute(countQuery, [status]);
+    const total = countResult[0].total;
+
+    return {
+      data: rows,
+      pagination: {
+        current_page: page,
+        total_pages: Math.ceil(total / limit),
+        total_items: total,
+        limit: limit
+      }
+    };
+  }
+
   // Mendapatkan donasi berdasarkan user ID
   static async getByUserId(userId) {
     const query = `
