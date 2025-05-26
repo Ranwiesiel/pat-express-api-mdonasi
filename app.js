@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 
+const indexRoutes = require('./routes/indexRoutes');
+
 // Import database connection
 const { testConnection } = require('./config/db');
 
@@ -18,35 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 // Trust proxy untuk mendapatkan IP address yang benar
 app.set('trust proxy', true);
 
-// Middleware untuk logging semua akses API
+
 app.use('/api', logApiAccess);
+app.use('/api', indexRoutes);
 
-// Import routes
-const donasiRoutes = require('./routes/donasiRoutes');
-const validasiRoutes = require('./routes/validasiRoutes');
-const riwayatRoutes = require('./routes/riwayatRoutes');
-const aksesApiRoutes = require('./routes/aksesApiRoutes');
 
-// Setup routes
-app.use('/api/donasi', donasiRoutes);
-app.use('/api/validasi-donasi', validasiRoutes);
-app.use('/api/riwayat-donasi', riwayatRoutes);
-app.use('/api/akses-api', aksesApiRoutes);
-
-// Root endpoint
-app.get('/api', (req, res) => {
-  res.json({
-    success: true,
-    message: 'MDonasi API is running',
-    version: '1.0.0',
-    endpoints: {
-      donasi: '/api/donasi',
-      validasi: '/api/validasi-donasi',
-      riwayat: '/api/riwayat-donasi',
-      akses_api: '/api/akses-api'
-    }
-  });
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
