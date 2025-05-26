@@ -8,7 +8,7 @@ const validateDonasiInput = (data) => {
   
   if (!data.type) {
     errors.push('Tipe donasi harus diisi');
-  } else if (!['money', 'barang'].includes(data.type)) {
+  } else if (!['uang', 'barang'].includes(data.type)) {
     errors.push('Tipe donasi harus "money" atau "barang"');
   }
   
