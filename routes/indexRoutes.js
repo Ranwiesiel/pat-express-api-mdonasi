@@ -9,7 +9,7 @@ const validasiRouter = require('./validasiRoutes');
 
 
 // Middleware untuk memverifikasi token sebelum mengakses rute lainnya
-// router.use(verifyToken);
+router.use(verifyToken);
 
 // Rute untuk donasi
 router.use('/donasi', donasiRouter);

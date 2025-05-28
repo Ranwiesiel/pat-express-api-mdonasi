@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
+const BASE_URL = process.env.MODUL1BASE_URL;
 
 // Middleware untuk validasi JWT token
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -12,28 +12,32 @@ const verifyToken = (req, res, next) => {
     });
   }
 
+  // Verifikasi token
   try {
-    // Verifikasi token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Menyimpan data user dari token
-    next();
+  const response = await fetch(
+    BASE_URL + "/verify-token", {
+    method: 'GET',
+    headers: {"Authorization": `Bearer ${token}`}
+  });
+
+  const resjson = await response.json();
+
+  if (!response.ok) {
+    return res.status(response.status).json({
+      success: false,
+      message: resjson.message
+    });
+  }
+
+  req.user = resjson.data; // Store the entire user data, not just role
+  next();
+
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Token has expired'
-      });
-    } else if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid token'
-      });
-    } else {
-      return res.status(401).json({
-        success: false,
-        message: 'Token verification failed'
-      });
-    }
+    return res.status(500).json({
+      success: false,
+      message: 'Token verification failed',
+      error: error.message
+    });
   }
 };
 
@@ -56,4 +60,23 @@ const verifyAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { verifyToken, verifyAdmin };
+// Middleware untuk validasi role admin
+const verifyVolunteer = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
+  if (req.user.role !== 'Volunteer') {
+    return res.status(403).json({
+      success: false,
+      message: 'Volunteer access required'
+    });
+  }
+
+  next();
+};
+
+module.exports = { verifyToken, verifyAdmin, verifyVolunteer };

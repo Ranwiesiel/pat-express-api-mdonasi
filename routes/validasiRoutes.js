@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ValidasiDonasiModel = require('../models/validasiDonasi');
 const DonasiModel = require('../models/donasi');
-const { verifyAdmin } = require('../middleware/authMiddleware');
+const { verifyAdmin, verifyVolunteer } = require('../middleware/authMiddleware');
 const { 
   validateValidasiInput, 
   validateAdminValidasiInput,
@@ -70,6 +70,35 @@ router.put('/admin/:idDonasi', verifyAdmin, async (req, res) => {
     }
   } catch (error) {
     console.error('Error updating validasi by admin:', error);
+    res.status(500).json(errorResponse('Terjadi kesalahan server'));
+  }
+});
+
+// PUT /api/validasi-donasi/volunteer/:idDonasi - Volunteer memvalidasi donasi
+router.put('/volunteer/:idDonasi', verifyVolunteer, async (req, res) => {
+  try {
+    const idDonasi = req.params.idDonasi;
+    
+    // Cek apakah donasi exists
+    const donasi = await DonasiModel.getById(idDonasi);
+    if (!donasi) {
+      return res.status(404).json(errorResponse(`Donasi dengan id ${idDonasi} tidak ditemukan`));
+    }
+
+    const errors = validateAdminValidasiInput(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json(errorResponse('Data validasi tidak lengkap', errors));
+    }
+
+    const updated = await ValidasiDonasiModel.updateByAdmin(idDonasi, req.body);
+    if (updated) {
+      const validasi = await ValidasiDonasiModel.getByDonasiId(idDonasi);
+      res.status(200).json(successResponse('Berhasil divalidasi', validasi));
+    } else {
+      res.status(404).json(errorResponse('Validasi donasi tidak ditemukan'));
+    }
+  } catch (error) {
+    console.error('Error updating validasi by volunteer:', error);
     res.status(500).json(errorResponse('Terjadi kesalahan server'));
   }
 });
