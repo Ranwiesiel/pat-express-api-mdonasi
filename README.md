@@ -7,7 +7,7 @@ API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi
 ## Base URL
 
 ```text
-http://mdonasi2.ranwiesiel.serv00.net/api/
+https://api-mdonasi-core.vercel.app/api/
 ```
 
 ## ERD
