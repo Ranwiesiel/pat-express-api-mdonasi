@@ -99,7 +99,6 @@ class DonasiController {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
             const type = req.params.type;
-
             const result = await DonasiModel.getByType(type, page, limit);
             res.status(200).json(successResponse(`Daftar donasi dengan tipe ${type}`, result.data, result.pagination));
         } catch (error) {
