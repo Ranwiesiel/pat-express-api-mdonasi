@@ -24,7 +24,7 @@ router.get('/:id', DonasiController.getDonasiById);
 router.get('/status/:status', DonasiController.getDonasiByStatus);
 
 // GET /api/donasi/type/:type - Mendapatkan donasi berdasarkan tipe
-router.get('/type/:type', DonasiController.getDonasiByStatus);
+router.get('/type/:type', DonasiController.getDonasiByType);
 
 
 
