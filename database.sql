@@ -8,8 +8,8 @@
 -- Tabel tb_donasi
 CREATE TABLE IF NOT EXISTS tb_donasi (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    userid VARCHAR(100) NOT NULL,
-    type ENUM('money', 'barang') NOT NULL,
+    userid INT (11) NOT NULL,
+    type ENUM('uang', 'barang') NOT NULL,
     qty INT NOT NULL,
     unit VARCHAR(100) NOT NULL,
     keterangan VARCHAR(255) NOT NULL,
