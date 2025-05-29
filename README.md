@@ -7,7 +7,7 @@ API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi
 ## Base URL
 
 ```text
-http://url-api/api
+http://mdonasi2.ranwiesiel.serv00.net/api/
 ```
 
 ## ERD
@@ -772,7 +772,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
 - `need_validation` - Menunggu user mengirimkan validasi
 - `pending` - Menunggu validasi dari admin
-- `success` - Donasi berhasil di validasi admin
+- `accepted` - Donasi berhasil di validasi admin
 - `rejected` - Donasi gagal
 - `taken` - Donasi telah diambil
 
