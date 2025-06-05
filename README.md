@@ -10,6 +10,10 @@ API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi
 https://api-mdonasi-core.vercel.app/api/
 ```
 
+api ini membutuhkan Auth bearer token untuk mengakses endpoint . Token yang sudah diambil dari modul 1, bisa digunakan untuk mengakses API ini tanpa perlu untuk generate lagi / memanggil request verifytoken dari modul 1, karena api ini sudah memanggil verifytoken dari modul 1, jadi anda cukup sertakan Auth Bearer tokennya saja. Pastikan untuk menyertakan token untuk setiap request
+
+
+
 ## ERD
 
 ![ERD Database](img/ERD_PAT.png)
@@ -740,21 +744,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-## Tampilan CRUD Donasi
 
-<!-- ![CRUD Donasi](./img/crud-donasi.png) -->
-
-## Tampilan Validasi Donasi
-
-<!-- ![Validasi Donasi](./img/validasi-donasi.png) -->
-
-## Tampilan Riwayat Donasi
-
-<!-- ![Riwayat Donasi](./img/riwayat-donasi.png) -->
-
-## Tampilan Riwayat Akses API
-
-<!-- ![Riwayat Akses API](./img/riwayat-access-api.png) -->
 
 ## Status Kode
 
