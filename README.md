@@ -483,8 +483,54 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   ],
 }
 ```
+#### 3. Volunteer mengambil donasi dan mengubah status validasi donasi menjadi taken
 
-#### 3. Mendapatkan Detail Validasi Donasi
+- **Method:** PUT
+- **Path:** `/validasi-donasi/volunteer/{idDonasi}`
+
+```json
+{
+  "status_validasi": "taken",
+  "catatan_validasi": "Donasi sudah diambil oleh PT blabla",
+  "validator": "PT BLABLA"
+}
+```
+##### Jika cancel donasi taken
+```json
+{
+  "status_validasi": "accepted", 
+  "catatan_validasi": "Donasi tidak jadi diambil oleh PT blabla",
+  "validator": "PT BLABLA"
+}
+```
+
+##### Response Success
+
+```json
+{
+  "success": true,
+  "message": "Berhasil divalidasi",
+  "data": {
+    "id": 51,
+    "id_donasi": 54,
+    "bukti_pembayaran": "https://example.com/bukti-transfer54.jpg",
+    "catatan_validasi": "Donasi sudah diambil oleh PT blabla",
+    "status_validasi": "taken",
+    "validator": "PT BLABLA",
+    "created_at": "2025-06-09T15:39:34.000Z",
+    "donasi": {
+      "id": 54,
+      "userid": 12,
+      "type": "uang",
+      "qty": 1000000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
+      "status": "taken"
+    }
+  }
+}
+```
+#### 4. Mendapatkan Detail Validasi Donasi
 
 - **Method:** GET
 - **Path:** `/validasi-donasi/{idDonasi}`
