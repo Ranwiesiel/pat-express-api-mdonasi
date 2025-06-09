@@ -40,6 +40,18 @@ const validateAdminValidasiInput = (data) => {
   return errors;
 };
 
+const validateVolunteerValidasiInput = (data) => {
+  const errors = [];
+  if (!data.status_validasi) {
+    errors.push('Status validasi harus diisi');
+  } else if (!['accepted', 'taken'].includes(data.status_validasi)) {
+    errors.push('Status validasi harus "accepted" atau "taken"');}
+  
+  if (!data.validator) {errors.push('Validator harus diisi');}
+  
+  return errors;
+};
+
 // Utility untuk response format yang konsisten
 const successResponse = (message, data = null, pagination = null) => {
   const response = {
@@ -69,6 +81,7 @@ module.exports = {
   validateDonasiInput,
   validateValidasiInput,
   validateAdminValidasiInput,
+  validateVolunteerValidasiInput,
   successResponse,
   errorResponse
 };

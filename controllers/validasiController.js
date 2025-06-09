@@ -2,10 +2,11 @@ const ValidasiDonasiModel = require('../models/validasiDonasi');
 const DonasiModel = require('../models/donasi');
 
 const { 
-  validateValidasiInput, 
-  validateAdminValidasiInput,
-  successResponse, 
-  errorResponse 
+    validateValidasiInput, 
+    validateAdminValidasiInput,
+    validateVolunteerValidasiInput,
+    successResponse, 
+    errorResponse 
 } = require('../utils/validation');
 
 class ValidasiController {
@@ -81,7 +82,7 @@ class ValidasiController {
             return res.status(404).json(errorResponse(`Donasi dengan id ${idDonasi} tidak ditemukan`));
             }
 
-            const errors = validateAdminValidasiInput(req.body);
+            const errors = validateVolunteerValidasiInput(req.body);
             if (errors.length > 0) {
             return res.status(400).json(errorResponse('Data validasi tidak lengkap', errors));
             }
