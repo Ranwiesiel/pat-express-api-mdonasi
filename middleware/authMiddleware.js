@@ -69,7 +69,7 @@ const verifyVolunteer = (req, res, next) => {
     });
   }
 
-  if (req.user.role !== 'Volunteer') {
+  if (req.user.role !== 'volunteer') {
     return res.status(403).json({
       success: false,
       message: 'Volunteer access required'
