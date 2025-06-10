@@ -105,7 +105,24 @@ class ValidasiController {    static async createValidasi(req, res) {
             console.error('Error updating validasi by volunteer:', error);
             res.status(500).json(errorResponse('Terjadi kesalahan server'));
         }
-    }    static async getDetailValidate(req, res) {
+    }   
+    
+     static async createValidasiService(donasiId) {
+        try {
+            const validasiData = {
+                id_donasi: donasiId,
+                bukti_pembayaran: '', 
+                catatan_validasi: '' 
+            };
+
+            await ValidasiDonasiModel.create(validasiData);
+        } catch (error) {
+            console.error('Error creating validasi service:', error);
+            throw error; // Let the caller handle the error
+        }
+    }
+
+    static async getDetailValidate(req, res) {
         try {
             const idDonasi = req.body.id_donasi;
             
