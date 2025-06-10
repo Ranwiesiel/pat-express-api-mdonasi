@@ -398,10 +398,12 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 
 ### Validasi Donasi
 
+perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id donasi , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan 
+
 #### 1. Donatur Membuat Validasi Donasi
 
 - **Method:** POST
-- **Path:** `/validasi-donasi/{idDonasi}`
+- **Path:** `/validasi-donasi/kirimbukti`
 - **Content-Type:** application/json
 
 ##### Request Body
@@ -452,17 +454,17 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 #### 2. Admin memvalidasi donasi
 
 - **Method:** PUT
-- **Path:** `/validasi-donasi/admin/{idDonasi}`
+- **Path:** `/validasi-donasi/admin/validasibyadmin`
 - **Content-Type:** application/json
 
 ##### Request Body
 
 ```json
 {
-  "id_validasi": "{id_validasi}",
+  "id_donasi": 1,
   "status_validasi": "accepted / rejected",
   "catatan_validasi": "Pembayaran sudah dikonfirmasi",
-  "validator": "Admin"
+  "validator": "Admin ronggo"
 }
 ```
 
@@ -489,18 +491,20 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 #### 3. Volunteer mengambil donasi dan mengubah status validasi donasi menjadi taken
 
 - **Method:** PUT
-- **Path:** `/validasi-donasi/volunteer/{idDonasi}`
+- **Path:** `/validasi-donasi/volunteer/takedonasi`
 
 ```json
 {
+  "id_donasi": 1,
   "status_validasi": "taken",
   "catatan_validasi": "Donasi sudah diambil oleh PT blabla",
   "validator": "PT BLABLA"
 }
 ```
-##### Jika cancel donasi taken
+##### Jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
 ```json
 {
+  "id_donasi": 1,
   "status_validasi": "accepted", 
   "catatan_validasi": "Donasi tidak jadi diambil oleh PT blabla",
   "validator": "PT BLABLA"
@@ -536,7 +540,13 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 #### 4. Mendapatkan Detail Validasi Donasi
 
 - **Method:** GET
-- **Path:** `/validasi-donasi/{idDonasi}`
+- **Path:** `/validasi-donasi/detaildonasi`
+
+```json
+{
+  "id_donasi": 1,
+}
+```
 
 ##### Response Success
 
