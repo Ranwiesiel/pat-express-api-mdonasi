@@ -4,6 +4,7 @@ const {
   successResponse, 
   errorResponse 
 } = require('../utils/validation');
+const ValidasiController = require('./validasiController');
 
 class DonasiController {
     static async getDonasi(req, res) {
@@ -26,8 +27,18 @@ class DonasiController {
             if (errors.length > 0) {
             return res.status(400).json(errorResponse('Data donasi tidak lengkap', errors));
             }
+            
+            if (req.user.role == 'admin'){
+                pass;
+            } else if (req.user.id !== req.body.userid) {
+                console.error(req.user.id, req.body.userid);
+                return res.status(403).json(errorResponse('Hanya admin atau pemilik donasi yang dapat membuat donasi'));
+            }
 
             const donasiId = await DonasiModel.create(req.body);
+            
+            await ValidasiController.createValidasiService(donasiId);
+
             const donasi = await DonasiModel.getById(donasiId);
             
             res.status(201).json(successResponse('Donasi berhasil dibuat', donasi));

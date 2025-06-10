@@ -27,7 +27,7 @@ class ValidasiController {
 
             const validasiData = {
             id_donasi: idDonasi,
-            bukti_pembayaran: req.body.bukti_pembayaran,
+            bukti_pembayaran: req.body.bukti_pembayaran || '',
             catatan_validasi: req.body.catatan_validasi || ''
             };
 
@@ -41,6 +41,21 @@ class ValidasiController {
             }
             console.error('Error creating validasi:', error);
             res.status(500).json(errorResponse('Terjadi kesalahan server'));
+        }
+    }
+
+    static async createValidasiService(donasiId) {
+        try {
+            const validasiData = {
+                id_donasi: donasiId,
+                bukti_pembayaran: '', 
+                catatan_validasi: '' 
+            };
+
+            await ValidasiDonasiModel.create(validasiData);
+        } catch (error) {
+            console.error('Error creating validasi service:', error);
+            throw error; // Let the caller handle the error
         }
     }
 
