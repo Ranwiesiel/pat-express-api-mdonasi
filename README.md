@@ -1,5 +1,47 @@
 # API Dokumentasi MDonasi
 
+## Table of Contents / Navigation
+
+- [Deskripsi](#deskripsi)
+- [Base URL](#base-url)
+- [ERD](#erd)
+- [Endpoints](#endpoints)
+  - [Manajemen Donasi](#manajemen-donasi)
+    - [1. Membuat Donasi Baru](#1-membuat-donasi-baru)
+    - [2. Mendapatkan Daftar Donasi](#2-mendapatkan-daftar-donasi)
+    - [3. Mendapatkan Donasi Berdasarkan ID](#3-mendapatkan-donasi-berdasarkan-id)
+    - [4. Mendapatkan Donasi Berdasarkan Type donasi](#4-mendapatkan-donasi-berdasarkan-type-donasi)
+    - [5. Mendapatkan Donasi Berdasarkan Status Donasi](#5-mendapatkan-donasi-berdasarkan-status-donasi)
+    - [6. Mendapatkan Donasi Berdasarkan ID User](#6-mendapatkan-donasi-berdasarkan-id-user)
+    - [7. Menghapus Data Donasi](#7-menghapus-data-donasi)
+    - [8. Mengubah data donasi](#8-mengubah-data-donasi)
+  - [Validasi Donasi](#validasi-donasi)
+    - [1. Donatur Membuat Validasi Donasi](#1-donatur-membuat-validasi-donasi)
+    - [2. Admin memvalidasi donasi](#2-admin-memvalidasi-donasi)
+    - [3. Volunteer mengambil donasi](#3-volunteer-mengambil-donasi-dan-mengubah-status-validasi-donasi-menjadi-taken)
+    - [4. Mendapatkan Detail Validasi Donasi](#4-mendapatkan-detail-validasi-donasi)
+  - [Riwayat Donasi](#riwayat-donasi)
+    - [1. Mendapatkan Semua Riwayat Donasi (Admin)](#1-mendapatkan-semua-riwayat-donasi-admin)
+    - [2. Mendapatkan Riwayat Donasi Berdasarkan ID User](#2-mendapatkan-riwayat-donasi-berdasarkan-id-user)
+  - [Riwayat Akses API](#riwayat-akses-api)
+    - [1. Mendapatkan Riwayat Akses API](#1-mendapatkan-riwayat-akses-api)
+- [Status Kode](#status-kode)
+- [Status Donasi](#status-donasi)
+- [Struktur Database](#struktur-database)
+  - [Tabel tb_donasi](#tabel-tb_donasi)
+  - [Tabel tb_validasi_donasi](#tabel-tb_validasi_donasi)
+  - [Tabel tb_akses_api](#tabel-tb_akses_api)
+
+
+## PERUBAHAN TERBARU [penting]
+```
+1. Perubahan pada endpoint validasi donasi, sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id_donasi pada body , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan
+
+2. Sekarang saat donatur membuat donasi, otomatis membuat validasi donasi, jadi tidak perlu lagi membuat validasi donasi secara terpisah, cukup buat donasi saja, dan donasi akan otomatis dibuatkan validasinya dan satusnya akan need validation, dan donatur bisa mengirimkan bukti pembayaran pada endpoint validasi donasi maka statusnya akan menjadi pending, dan admin bisa memvalidasi donasi tersebut dengan status accepted atau rejected, jika diterima maka status donasi akan menjadi success, jika ditolak maka status donasi akan menjadi failed
+
+3. Perubahan pada endpoint validasi donasi, sekarang volunteer bisa mengambil donasi yang sudah di accepted dan mengubah status validasi donasi menjadi taken, jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
+```
+
 ## Deskripsi
 
 API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi. API ini menyediakan endpoint untuk membuat, melihat, mengubah, dan menghapus data donasi, serta fitur untuk validasi donasi, riwayat donasi, dan melacak riwayat akses API.
