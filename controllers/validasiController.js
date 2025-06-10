@@ -29,9 +29,9 @@ class ValidasiController {    static async createValidasi(req, res) {
             }
 
             const validasiData = {
-                id_donasi: idDonasi,
-                bukti_pembayaran: req.body.bukti_pembayaran,
-                catatan_validasi: req.body.catatan_validasi || ''
+            id_donasi: idDonasi,
+            bukti_pembayaran: req.body.bukti_pembayaran || '',
+            catatan_validasi: req.body.catatan_validasi || ''
             };
 
             const validasiId = await ValidasiDonasiModel.create(validasiData);

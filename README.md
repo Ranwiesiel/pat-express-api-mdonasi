@@ -29,6 +29,9 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ### Manajemen Donasi
 
 #### 1. Membuat Donasi Baru
+Catatan:<br>
+Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
+**Otomatis** membuat validation donasi.
 
 - **Method:** POST
 - **Path:** `/donasi`
