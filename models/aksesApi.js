@@ -50,7 +50,7 @@ class AksesApiModel {
     };
   }
 
-  // Menyimpan log akses API
+  // Menyimpan log akses API baru dalam tabel
   static async create(aksesData) {
     const { endpoint, method, ip_address, user_agent, status_code, response_time } = aksesData;
     const query = `
