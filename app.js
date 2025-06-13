@@ -49,7 +49,7 @@ const startServer = async () => {
     await testConnection();
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);
-      console.log(`API Base URL: http://localhost:${port}/api`);
+      // console.log(`API Base URL: http://localhost:${port}/api`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

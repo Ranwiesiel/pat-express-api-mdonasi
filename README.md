@@ -1,5 +1,47 @@
 # API Dokumentasi MDonasi
 
+## Table of Contents / Navigation
+
+- [Deskripsi](#deskripsi)
+- [Base URL](#base-url)
+- [ERD](#erd)
+- [Endpoints](#endpoints)
+  - [Manajemen Donasi](#manajemen-donasi)
+    - [1. Membuat Donasi Baru](#1-membuat-donasi-baru)
+    - [2. Mendapatkan Daftar Donasi](#2-mendapatkan-daftar-donasi)
+    - [3. Mendapatkan Donasi Berdasarkan ID](#3-mendapatkan-donasi-berdasarkan-id)
+    - [4. Mendapatkan Donasi Berdasarkan Type donasi](#4-mendapatkan-donasi-berdasarkan-type-donasi)
+    - [5. Mendapatkan Donasi Berdasarkan Status Donasi](#5-mendapatkan-donasi-berdasarkan-status-donasi)
+    - [6. Mendapatkan Donasi Berdasarkan ID User](#6-mendapatkan-donasi-berdasarkan-id-user)
+    - [7. Menghapus Data Donasi](#7-menghapus-data-donasi)
+    - [8. Mengubah data donasi](#8-mengubah-data-donasi)
+  - [Validasi Donasi](#validasi-donasi)
+    - [1. Donatur Membuat Validasi Donasi](#1-donatur-membuat-validasi-donasi)
+    - [2. Admin memvalidasi donasi](#2-admin-memvalidasi-donasi)
+    - [3. Volunteer mengambil donasi](#3-volunteer-mengambil-donasi-dan-mengubah-status-validasi-donasi-menjadi-taken)
+    - [4. Mendapatkan Detail Validasi Donasi](#4-mendapatkan-detail-validasi-donasi)
+  - [Riwayat Donasi](#riwayat-donasi)
+    - [1. Mendapatkan Semua Riwayat Donasi (Admin)](#1-mendapatkan-semua-riwayat-donasi-admin)
+    - [2. Mendapatkan Riwayat Donasi Berdasarkan ID User](#2-mendapatkan-riwayat-donasi-berdasarkan-id-user)
+  - [Riwayat Akses API](#riwayat-akses-api)
+    - [1. Mendapatkan Riwayat Akses API](#1-mendapatkan-riwayat-akses-api)
+- [Status Kode](#status-kode)
+- [Status Donasi](#status-donasi)
+- [Struktur Database](#struktur-database)
+  - [Tabel tb_donasi](#tabel-tb_donasi)
+  - [Tabel tb_validasi_donasi](#tabel-tb_validasi_donasi)
+  - [Tabel tb_akses_api](#tabel-tb_akses_api)
+
+
+## PERUBAHAN TERBARU [penting]
+```
+1. Perubahan pada endpoint validasi donasi, sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id_donasi pada body , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan
+
+2. Sekarang saat donatur membuat donasi, otomatis membuat validasi donasi, jadi tidak perlu lagi membuat validasi donasi secara terpisah, cukup buat donasi saja, dan donasi akan otomatis dibuatkan validasinya dan satusnya akan need validation, dan donatur bisa mengirimkan bukti pembayaran pada endpoint validasi donasi maka statusnya akan menjadi pending, dan admin bisa memvalidasi donasi tersebut dengan status accepted atau rejected, jika diterima maka status donasi akan menjadi success, jika ditolak maka status donasi akan menjadi failed
+
+3. Perubahan pada endpoint validasi donasi, sekarang volunteer bisa mengambil donasi yang sudah di accepted dan mengubah status validasi donasi menjadi taken, jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
+```
+
 ## Deskripsi
 
 API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi. API ini menyediakan endpoint untuk membuat, melihat, mengubah, dan menghapus data donasi, serta fitur untuk validasi donasi, riwayat donasi, dan melacak riwayat akses API.
@@ -9,6 +51,10 @@ API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi
 ```text
 https://api-mdonasi-core.vercel.app/api/
 ```
+
+api ini membutuhkan Auth bearer token untuk mengakses endpoint . Token yang sudah diambil dari modul 1, bisa digunakan untuk mengakses API ini tanpa perlu untuk generate lagi / memanggil request verifytoken dari modul 1, karena api ini sudah memanggil verifytoken dari modul 1, jadi anda cukup sertakan Auth Bearer tokennya saja. Pastikan untuk menyertakan token untuk setiap request
+
+
 
 ## ERD
 
@@ -25,6 +71,9 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 ### Manajemen Donasi
 
 #### 1. Membuat Donasi Baru
+Catatan:<br>
+Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
+**Otomatis** membuat validation donasi.
 
 - **Method:** POST
 - **Path:** `/donasi`
@@ -391,10 +440,12 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 
 ### Validasi Donasi
 
+perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id donasi , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan 
+
 #### 1. Donatur Membuat Validasi Donasi
 
 - **Method:** POST
-- **Path:** `/validasi-donasi/{idDonasi}`
+- **Path:** `/validasi-donasi/kirimbukti`
 - **Content-Type:** application/json
 
 ##### Request Body
@@ -445,17 +496,17 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 #### 2. Admin memvalidasi donasi
 
 - **Method:** PUT
-- **Path:** `/validasi-donasi/admin/{idDonasi}`
+- **Path:** `/validasi-donasi/admin/validasibyadmin`
 - **Content-Type:** application/json
 
 ##### Request Body
 
 ```json
 {
-  "id_validasi": "{id_validasi}",
+  "id_donasi": 1,
   "status_validasi": "accepted / rejected",
   "catatan_validasi": "Pembayaran sudah dikonfirmasi",
-  "validator": "Admin"
+  "validator": "Admin ronggo"
 }
 ```
 
@@ -479,11 +530,65 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
   ],
 }
 ```
+#### 3. Volunteer mengambil donasi dan mengubah status validasi donasi menjadi taken
 
-#### 3. Mendapatkan Detail Validasi Donasi
+- **Method:** PUT
+- **Path:** `/validasi-donasi/volunteer/takedonasi`
+
+```json
+{
+  "id_donasi": 1,
+  "status_validasi": "taken",
+  "catatan_validasi": "Donasi sudah diambil oleh PT blabla",
+  "validator": "PT BLABLA"
+}
+```
+##### Jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
+```json
+{
+  "id_donasi": 1,
+  "status_validasi": "accepted", 
+  "catatan_validasi": "Donasi tidak jadi diambil oleh PT blabla",
+  "validator": "PT BLABLA"
+}
+```
+
+##### Response Success
+
+```json
+{
+  "success": true,
+  "message": "Berhasil divalidasi",
+  "data": {
+    "id": 51,
+    "id_donasi": 54,
+    "bukti_pembayaran": "https://example.com/bukti-transfer54.jpg",
+    "catatan_validasi": "Donasi sudah diambil oleh PT blabla",
+    "status_validasi": "taken",
+    "validator": "PT BLABLA",
+    "created_at": "2025-06-09T15:39:34.000Z",
+    "donasi": {
+      "id": 54,
+      "userid": 12,
+      "type": "uang",
+      "qty": 1000000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
+      "status": "taken"
+    }
+  }
+}
+```
+#### 4. Mendapatkan Detail Validasi Donasi
 
 - **Method:** GET
-- **Path:** `/validasi-donasi/{idDonasi}`
+- **Path:** `/validasi-donasi/detaildonasi`
+
+```json
+{
+  "id_donasi": 1,
+}
+```
 
 ##### Response Success
 
@@ -740,21 +845,7 @@ Dari gambar database diatas, sistem MDonasi terdiri dari beberapa tabel utama:
 }
 ```
 
-## Tampilan CRUD Donasi
 
-<!-- ![CRUD Donasi](./img/crud-donasi.png) -->
-
-## Tampilan Validasi Donasi
-
-<!-- ![Validasi Donasi](./img/validasi-donasi.png) -->
-
-## Tampilan Riwayat Donasi
-
-<!-- ![Riwayat Donasi](./img/riwayat-donasi.png) -->
-
-## Tampilan Riwayat Akses API
-
-<!-- ![Riwayat Akses API](./img/riwayat-access-api.png) -->
 
 ## Status Kode
 

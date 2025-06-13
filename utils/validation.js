@@ -1,56 +1,53 @@
 // Utility untuk validasi input data
 const validateDonasiInput = (data) => {
   const errors = [];
-  
   if (!data.userid) {
     errors.push('User ID harus diisi');
   }
-  
+
   if (!data.type) {
     errors.push('Tipe donasi harus diisi');
   } else if (!['uang', 'barang'].includes(data.type)) {
-    errors.push('Tipe donasi harus "money" atau "barang"');
-  }
+    errors.push('Tipe donasi harus "money" atau "barang"');}
   
   if (!data.qty) {
     errors.push('Quantity harus diisi');
   } else if (isNaN(data.qty) || data.qty <= 0) {
-    errors.push('Quantity harus berupa angka positif');
-  }
+    errors.push('Quantity harus berupa angka positif');}
   
-  if (!data.unit) {
-    errors.push('Unit harus diisi');
-  }
+  if (!data.unit) {errors.push('Unit harus diisi');}
   
-  if (!data.keterangan) {
-    errors.push('Keterangan harus diisi');
-  }
+  if (!data.keterangan) {errors.push('Keterangan harus diisi');}
   
   return errors;
 };
 
 const validateValidasiInput = (data) => {
   const errors = [];
-  
-  if (!data.bukti_pembayaran) {
-    errors.push('Bukti pembayaran harus diisi');
-  }
-  
+  if (!data.bukti_pembayaran) {errors.push('Bukti pembayaran harus diisi');}
   return errors;
 };
 
 const validateAdminValidasiInput = (data) => {
   const errors = [];
-  
   if (!data.status_validasi) {
     errors.push('Status validasi harus diisi');
   } else if (!['accepted', 'rejected'].includes(data.status_validasi)) {
-    errors.push('Status validasi harus "accepted" atau "rejected"');
-  }
+    errors.push('Status validasi harus "accepted" atau "rejected"');}
   
-  if (!data.validator) {
-    errors.push('Validator harus diisi');
-  }
+  if (!data.validator) {errors.push('Validator harus diisi');}
+  
+  return errors;
+};
+
+const validateVolunteerValidasiInput = (data) => {
+  const errors = [];
+  if (!data.status_validasi) {
+    errors.push('Status validasi harus diisi');
+  } else if (!['accepted', 'taken'].includes(data.status_validasi)) {
+    errors.push('Status validasi harus "accepted" atau "taken"');}
+  
+  if (!data.validator) {errors.push('Validator harus diisi');}
   
   return errors;
 };
@@ -62,13 +59,9 @@ const successResponse = (message, data = null, pagination = null) => {
     message: message
   };
   
-  if (data !== null) {
-    response.data = data;
-  }
+  if (data !== null) {response.data = data;}
   
-  if (pagination) {
-    response.pagination = pagination;
-  }
+  if (pagination) {response.pagination = pagination;}
   
   return response;
 };
@@ -79,9 +72,7 @@ const errorResponse = (message, errors = null) => {
     message: message
   };
   
-  if (errors) {
-    response.errors = errors;
-  }
+  if (errors) {response.errors = errors;}
   
   return response;
 };
@@ -90,6 +81,7 @@ module.exports = {
   validateDonasiInput,
   validateValidasiInput,
   validateAdminValidasiInput,
+  validateVolunteerValidasiInput,
   successResponse,
   errorResponse
 };
