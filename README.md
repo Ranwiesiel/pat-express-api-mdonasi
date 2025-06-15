@@ -24,6 +24,8 @@
   - [Riwayat Donasi](#riwayat-donasi)
     - [1. Mendapatkan Semua Riwayat Donasi (Admin)](#1-mendapatkan-semua-riwayat-donasi-admin)
     - [2. Mendapatkan Riwayat Donasi Berdasarkan ID User](#2-mendapatkan-riwayat-donasi-berdasarkan-id-user)
+    - [3. Mendapatkan Riwayat Donasi Berdasarkan Type dan Qty](#3-mendapatkan-riwayat-donasi-berdasarkan-type-dan-qty)
+    - [2. Mendapatkan Riwayat Donasi Berdasarkan Status](#4-mendapatkan-riwayat-donasi-berdasarkan-status)
   - [Riwayat Akses API](#riwayat-akses-api)
     - [1. Mendapatkan Riwayat Akses API](#1-mendapatkan-riwayat-akses-api)
 - [Status Kode](#status-kode)
@@ -43,6 +45,8 @@
 3. Perubahan pada endpoint validasi donasi, sekarang volunteer bisa mengambil donasi yang sudah di accepted dan mengubah status validasi donasi menjadi taken, jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
 
 4. Perubahan pada endpoint untuk kirim bukti donasi sekarang menggunakan method PUT/PATCH , dikarenakan sekarang data validasi akan dibuat otomatis saat membuat donasi, jaadi saat mengirim bukti donasi, data akan diubah menjadi pending untuk di cek admin
+
+5. Penambahan pada endpoint GET riwayat donasi bisa dilakukan pencarian dengan params dari userId, type (type donasinya bisa uang, barang, dll), qty (jumlah nominal donasi bisa 78 jika barang dan 58000 jika uang), dan status (status donasinya)
 ```
 
 ## Deskripsi
@@ -783,7 +787,7 @@ donatur membuat validasi sekarang dengan method **PUT** karena data validasi oto
 #### 2. Mendapatkan Riwayat Donasi Berdasarkan ID User
 
 - **Method:** GET
-- **Path:** `/riwayat-donasi/{userId}`
+- **Path:** `/riwayat-donasi?userId={userid}`
 
 ##### Response Success
 
@@ -793,7 +797,7 @@ donatur membuat validasi sekarang dengan method **PUT** karena data validasi oto
 ```json
 {
   "success": true,
-  "message": "Riwayat donasi berhasil diambil",
+  "message": "Riwayat donasi berdasarkan userId berhasil diambil",
   "userid" : 1,
   "data": [
     {
@@ -834,6 +838,150 @@ donatur membuat validasi sekarang dengan method **PUT** karena data validasi oto
     }
   ]
 }
+```
+#### 3. Mendapatkan Riwayat Donasi Berdasarkan Type dan Qty
+
+- **Method:** GET
+- **Path:** `/riwayat-donasi?type={tipe}&qty={jumlah}`
+
+##### Query Parameters
+- `type` (opsional): Jenis donasi (misal: uang, barang)
+- `qty` (opsional): Jumlah donasi (angka)
+- `page` (opsional): Halaman yang ingin ditampilkan (default: 1)
+- `limit` (opsional): Jumlah data per halaman (default: 10)
+
+```
+Catatan: Parameter type dan qty dapat digunakan bersamaan atau salah satu saja.
+```
+##### Contoh:
+- Get berdasarkan type: `/riwayat-donasi?type=barang`
+- Get berdasarkan qty:`/riwayat-donasi?type&qty=10`
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Riwayat donasi berdasarkan type atau qty berhasil diambil",
+  "data": [
+    {
+        "id": 50,
+        "userid": 19,
+        "type": "barang",
+        "qty": 24,
+        "unit": "kotak",
+        "keterangan": "Baju bekas banget",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-06-08T14:05:37.000Z",
+        "status": {
+            "id": 50,
+            "id_donasi": 50,
+            "bukti_pembayaran": "https://dummyimage.com/bukti50.jpg",
+            "catatan_validasi": "tolong di validasi",
+            "status_validasi": "pending",
+            "validator": "",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    },
+    {
+        "id": 24,
+        "userid": 23,
+        "type": "barang",
+        "qty": 9,
+        "unit": "karung",
+        "keterangan": "Baju bekas",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-05-28T07:41:04.000Z",
+        "status": {
+            "id": 24,
+            "id_donasi": 24,
+            "bukti_pembayaran": "https://dummyimage.com/bukti24.jpg",
+            "catatan_validasi": "Perlu pengecekan ulang",
+            "status_validasi": "need_validation",
+            "validator": "admin1",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 1,
+    "total_items": 1,
+    "limit": 10
+  }
+}
+
+```
+
+#### 4. Mendapatkan Riwayat Donasi Berdasarkan Status 
+
+- **Method:** GET
+- **Path:** `/riwayat-donasi?status={status}`
+
+##### Query Parameters
+- `page` (opsional): Halaman yang ingin ditampilkan (default: 1)
+- `limit` (opsional): Jumlah data per halaman (default: 10)
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Riwayat donasi berdasarkan status berhasil diambil",
+  "data": [
+    {
+        "id": 9,
+        "userid": 29,
+        "type": "barang",
+        "qty": 63,
+        "unit": "karung",
+        "keterangan": "Baju bekas",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-05-28T07:41:04.000Z",
+        "status": {
+            "id": 9,
+            "id_donasi": 9,
+            "bukti_pembayaran": "https://dummyimage.com/bukti9.jpg",
+            "catatan_validasi": "Perlu pengecekan ulang",
+            "status_validasi": "pending",
+            "validator": "admin1",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    },
+    {
+        "id": 39,
+        "userid": 26,
+        "type": "uang",
+        "qty": 66000,
+        "unit": "rupiah",
+        "keterangan": "Untuk anak yatim",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-05-28T07:41:04.000Z",
+        "status": {
+            "id": 39,
+            "id_donasi": 39,
+            "bukti_pembayaran": "https://dummyimage.com/bukti39.jpg",
+            "catatan_validasi": "Valid dan lengkap",
+            "status_validasi": "pending",
+            "validator": "admin3",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 1,
+    "total_items": 1,
+    "limit": 10
+  }
+}
+
 ```
 
 ### Riwayat Akses API

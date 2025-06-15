@@ -19,11 +19,21 @@ class RiwayatController {
       }
 
       // Riwayat by type & qty
-      if (type || qty && !status) {
+      if (type && qty && !status) {
         const result = await DonasiModel.getRiwayatByTypeAndQty(type, parseInt(qty), page, limit);
         return res.status(200).json({
           success: true,
           message: 'Riwayat donasi berdasarkan type dan qty berhasil diambil',
+          ...result
+        });
+      }
+
+      // Riwayat by type & qty
+      if ((type || qty) && !status) {
+        const result = await DonasiModel.getRiwayatByTypeOrQty(type, parseInt(qty), page, limit);
+        return res.status(200).json({
+          success: true,
+          message: 'Riwayat donasi berdasarkan type atau qty berhasil diambil',
           ...result
         });
       }
