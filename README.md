@@ -20,6 +20,7 @@
     - [2. Admin memvalidasi donasi](#2-admin-memvalidasi-donasi)
     - [3. Volunteer mengambil donasi](#3-volunteer-mengambil-donasi-dan-mengubah-status-validasi-donasi-menjadi-taken)
     - [4. Mendapatkan Detail Validasi Donasi](#4-mendapatkan-detail-validasi-donasi)
+    - [5. Backend only not public usable - membuat validasi](#5-backend-only-create-data-validasi)
   - [Riwayat Donasi](#riwayat-donasi)
     - [1. Mendapatkan Semua Riwayat Donasi (Admin)](#1-mendapatkan-semua-riwayat-donasi-admin)
     - [2. Mendapatkan Riwayat Donasi Berdasarkan ID User](#2-mendapatkan-riwayat-donasi-berdasarkan-id-user)
@@ -40,6 +41,8 @@
 2. Sekarang saat donatur membuat donasi, otomatis membuat validasi donasi, jadi tidak perlu lagi membuat validasi donasi secara terpisah, cukup buat donasi saja, dan donasi akan otomatis dibuatkan validasinya dan satusnya akan need validation, dan donatur bisa mengirimkan bukti pembayaran pada endpoint validasi donasi maka statusnya akan menjadi pending, dan admin bisa memvalidasi donasi tersebut dengan status accepted atau rejected, jika diterima maka status donasi akan menjadi success, jika ditolak maka status donasi akan menjadi failed
 
 3. Perubahan pada endpoint validasi donasi, sekarang volunteer bisa mengambil donasi yang sudah di accepted dan mengubah status validasi donasi menjadi taken, jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
+
+4. Perubahan pada endpoint untuk kirim bukti donasi sekarang menggunakan method PUT/PATCH , dikarenakan sekarang data validasi akan dibuat otomatis saat membuat donasi, jaadi saat mengirim bukti donasi, data akan diubah menjadi pending untuk di cek admin
 ```
 
 ## Deskripsi
@@ -442,9 +445,11 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 
 perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id donasi , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan 
 
+donatur membuat validasi sekarang dengan method **PUT** karena data validasi otomatis ada saat membuat donasi
+
 #### 1. Donatur Membuat Validasi Donasi
 
-- **Method:** POST
+- **Method:** PUT
 - **Path:** `/validasi-donasi/kirimbukti`
 - **Content-Type:** application/json
 
@@ -452,7 +457,7 @@ perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil i
 
 ```json
 {
-  "id_donasi": 1,
+  "id_donasi": 50,
   "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
   "catatan_validasi": "Pembayaran sudah masuk",
 }
@@ -465,32 +470,30 @@ perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil i
 
 ```json
 {
-  "success": true,
-  "message": "Validasi donasi berhasil dibuat",
-  "data": {
-    "id": 1,
-    "id_donasi": 1,
-    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-    "catatan_validasi": "Pembayaran sudah masuk",
-    "status_validasi": "pending",
-    "validator": "Admin",
-    "created_at": "2025-05-21T16:30:00.000Z"
+    {
+    "success": true,
+    "message": "Berhasil dikirim bukti validasi",
+    "data": {
+      "id": 50,
+      "id_donasi": 50,
+      "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+      "catatan_validasi": "Pembayaran sudah masuk",
+      "status_validasi": "pending",
+      "validator": "",
+      "created_at": "2025-05-28T06:35:52.000Z",
+      "donasi": {
+        "id": 50,
+        "userid": 19,
+        "type": "barang",
+        "qty": 24,
+        "unit": "kotak",
+        "keterangan": "Baju bekas banget",
+        "status": "pending"
+      }
+    }
   }
 }
 
-{
-  "success": true,
-  "message": "Validasi donasi berhasil dibuat",
-  "data": {
-    "id": 1,
-    "id_donasi": 1,
-    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-    "catatan_validasi": "Pembayaran sudah masuk",
-    "status_validasi": "accepted",
-    "validator": "Admin",
-    "created_at": "2025-06-21T16:30:00.000Z"
-  }
-}
 ```
 
 #### 2. Admin memvalidasi donasi
@@ -598,6 +601,47 @@ perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil i
 ```json
 {
   "success": true,
+  "message": "Validasi donasi berhasil dibuat",
+  "data": {
+    "id": 1,
+    "id_donasi": 1,
+    "bukti_pembayaran": "g",
+    "catatan_validasi": "",
+    "status_validasi": "need_validation",
+    "validator": "",
+    "created_at": "2025-05-21T16:30:00.000Z",
+    "donasi": {
+      "id": 1,
+      "userid": 1,
+      "type": "uang",
+      "qty": 100000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
+      "status": "success"
+    }
+  }
+}
+```
+
+#### 5. [Backend Only] Create data validasi
+
+- **Method:** POST
+- **Path:** `/validasi-donasi/createvalidasi`
+
+```json
+{
+  "id_donasi": 1,
+}
+```
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
   "message": "Detail validasi donasi berhasil ditemukan",
   "data": {
     "id": 1,
@@ -619,6 +663,7 @@ perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil i
   }
 }
 ```
+
 
 ### Riwayat Donasi
 

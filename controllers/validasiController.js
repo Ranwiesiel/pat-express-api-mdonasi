@@ -9,7 +9,9 @@ const {
     errorResponse 
 } = require('../utils/validation');
 
-class ValidasiController {    static async createValidasi(req, res) {
+class ValidasiController {    
+    
+    static async createValidasi(req, res) {
         try {
             const idDonasi = req.body.id_donasi;
             
@@ -23,10 +25,10 @@ class ValidasiController {    static async createValidasi(req, res) {
                 return res.status(404).json(errorResponse(`Donasi dengan id ${idDonasi} tidak ditemukan`));
             }
 
-            const errors = validateValidasiInput(req.body);
-            if (errors.length > 0) {
-                return res.status(400).json(errorResponse('Data validasi tidak lengkap', errors));
-            }
+            // const errors = validateValidasiInput(req.body);
+            // if (errors.length > 0) {
+            //     return res.status(400).json(errorResponse('Data validasi tidak lengkap', errors));
+            // }
 
             const validasiData = {
             id_donasi: idDonasi,
@@ -45,7 +47,57 @@ class ValidasiController {    static async createValidasi(req, res) {
             console.error('Error creating validasi:', error);
             res.status(500).json(errorResponse('Terjadi kesalahan server'));
         }
-    }    static async validateDonasiAdmin(req, res) {
+    }
+    
+    static async kirimBukti(req, res) {
+
+        try {
+            const idDonasi = req.body.id_donasi;
+
+            if (!idDonasi) {
+                return res.status(400).json(errorResponse('id_donasi harus disertakan dalam request body'));
+            }
+
+            // Cek apakah donasi exists
+            const donasi = await DonasiModel.getById(idDonasi);
+            if (!donasi) {
+                return res.status(404).json(errorResponse(`Donasi dengan id ${idDonasi} tidak ditemukan`));
+            }
+            // if( donasi.status == 'need_validation') {
+            //     return res.status(400).json(errorResponse('Bukti pembayaran untuk donasi ini sudah ada, silakan periksa kembali'));
+            // }
+
+            const errors = validateValidasiInput(req.body);
+            if (errors.length > 0) {
+                return res.status(400).json(errorResponse('Data validasi tidak lengkap', errors));
+            }
+            
+            const validasiData = {
+            status_validasi: 'pending',
+            bukti_pembayaran: req.body.bukti_pembayaran ,
+            catatan_validasi: req.body.catatan_validasi || '',
+            validator : ''
+            };
+
+            const updated = await ValidasiDonasiModel.kirimBukti(idDonasi, validasiData);
+
+            if (updated) {
+                const validasi = await ValidasiDonasiModel.getByDonasiId(idDonasi);
+                res.status(200).json(successResponse('Berhasil dikirim bukti validasi', validasi));
+            } else {
+                res.status(404).json(errorResponse('Validasi donasi gagal dikirim'));
+            };
+
+        }
+        catch (error) {
+            if (error.message === 'Bukti pembayaran untuk donasi ini sudah ada, silakan periksa kembali') {
+                return res.status(400).json(errorResponse(error.message));
+            }
+            console.error('Error creating validasi:', error);
+            res.status(500).json(errorResponse('Terjadi kesalahan server' , error)); }
+    }
+    
+    static async validateDonasiAdmin(req, res) {
         try {
             const idDonasi = req.body.id_donasi;
             
