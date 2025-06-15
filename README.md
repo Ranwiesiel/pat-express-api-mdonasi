@@ -25,7 +25,7 @@
     - [1. Mendapatkan Semua Riwayat Donasi (Admin)](#1-mendapatkan-semua-riwayat-donasi-admin)
     - [2. Mendapatkan Riwayat Donasi Berdasarkan ID User](#2-mendapatkan-riwayat-donasi-berdasarkan-id-user)
     - [3. Mendapatkan Riwayat Donasi Berdasarkan Type dan Qty](#3-mendapatkan-riwayat-donasi-berdasarkan-type-dan-qty)
-    - [2. Mendapatkan Riwayat Donasi Berdasarkan Status](#4-mendapatkan-riwayat-donasi-berdasarkan-status)
+    - [4. Mendapatkan Riwayat Donasi Berdasarkan Status](#4-mendapatkan-riwayat-donasi-berdasarkan-status)
   - [Riwayat Akses API](#riwayat-akses-api)
     - [1. Mendapatkan Riwayat Akses API](#1-mendapatkan-riwayat-akses-api)
 - [Status Kode](#status-kode)
