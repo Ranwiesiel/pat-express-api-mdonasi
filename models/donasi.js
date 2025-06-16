@@ -14,7 +14,7 @@ class DonasiModel {
   }
 
   // Mendapatkan semua donasi dengan pagination
-  static async getAll(page = 1, limit = 10, status = null) {
+  static async getAll(page = 1, limit = 10, status) {
     const offset = (page - 1) * limit;
     let query = `
       SELECT d.*, v.status as status_validasi 
