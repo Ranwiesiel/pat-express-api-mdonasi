@@ -29,8 +29,8 @@ class DonasiController {
             }
             
             if (req.user.role == 'admin'){
-                pass;
-            } else if (req.user.id !== req.body.userid) {
+                {};
+            } else if (req.user.id != req.body.userid) {
                 console.error(req.user.id, req.body.userid);
                 return res.status(403).json(errorResponse('Hanya admin atau pemilik donasi yang dapat membuat donasi'));
             }
