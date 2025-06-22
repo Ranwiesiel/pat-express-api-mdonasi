@@ -90,11 +90,11 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 
 ```json
 {
-  "userid": "{userid}",
+  "userid": {userid},
   "type": "uang",
   "qty": 100000,
   "unit": "rupiah",
-  "keterangan": "Semoga bermanfaat",
+  "keterangan": "Semoga bermanfaat"
 }
 ```
 
@@ -258,7 +258,7 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
   "total_pages": 1,
   "total_items": 6,
   "limit": 10
-}
+  }
 }
 ```
 
@@ -403,7 +403,7 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
   "type": "uang",
   "qty": 100000,
   "unit": "rupiah",
-  "keterangan": "Semoga bermanfaat",
+  "keterangan": "Semoga bermanfaat"
 }
 ```
 
@@ -463,7 +463,7 @@ donatur membuat validasi sekarang dengan method **PUT** karena data validasi oto
 {
   "id_donasi": 50,
   "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-  "catatan_validasi": "Pembayaran sudah masuk",
+  "catatan_validasi": "Pembayaran sudah masuk"
 }
 ```
 
