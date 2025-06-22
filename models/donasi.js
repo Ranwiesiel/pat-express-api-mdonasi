@@ -14,7 +14,7 @@ class DonasiModel {
   }
 
   // Mendapatkan semua donasi dengan pagination
-  static async getAll(page = 1, limit = 10, status = null) {
+  static async getAll(page = 1, limit = 10, status) {
     const offset = (page - 1) * limit;
     let query = `
       SELECT d.*, v.status as status_validasi 
@@ -239,6 +239,148 @@ class DonasiModel {
       status: JSON.parse(row.status)
     }));
   }
+
+  
+  // Mendapatkan riwayat donasi berdasarkan type dan qty
+  static async getRiwayatByTypeAndQty(type, qty, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const query = `
+    SELECT 
+    d.*,
+    JSON_OBJECT(
+      'id', v.id,
+      'id_donasi', v.id_donasi,
+      'bukti_pembayaran', v.bukti_pembayaran,
+      'catatan_validasi', v.catatan_validasi,
+      'status_validasi', v.status,
+      'validator', v.validator,
+      'created_at', v.created_at
+      ) as status
+      FROM tb_donasi d 
+      LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi 
+      WHERE d.type = ? AND d.qty = ?
+      ORDER BY d.created_at DESC
+      LIMIT ? OFFSET ?
+      `;
+      
+      const [rows] = await pool.execute(query, [type, qty, limit, offset]);
+      
+      const countQuery = `
+      SELECT COUNT(*) as total
+      FROM tb_donasi d 
+      WHERE d.type = ? AND d.qty = ?
+      `;
+      const [countResult] = await pool.execute(countQuery, [type, qty]);
+      const total = countResult[0].total;
+      
+      return {
+        data: rows.map(row => ({
+          ...row,
+          status: row.status ? JSON.parse(row.status) : null
+        })),
+        pagination: {
+          current_page: page,
+          total_pages: Math.ceil(total / limit),
+          total_items: total,
+          limit: limit
+        }
+      };
+    }
+    
+  // Mendapatkan riwayat donasi berdasarkan type dan qty
+  static async getRiwayatByTypeOrQty(type, qty, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const query = `
+      SELECT 
+        d.*,
+        JSON_OBJECT(
+          'id', v.id,
+          'id_donasi', v.id_donasi,
+          'bukti_pembayaran', v.bukti_pembayaran,
+          'catatan_validasi', v.catatan_validasi,
+          'status_validasi', v.status,
+          'validator', v.validator,
+          'created_at', v.created_at
+        ) as status
+      FROM tb_donasi d 
+      LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi 
+      WHERE d.type = ? OR d.qty = ?
+      ORDER BY d.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    const [rows] = await pool.execute(query, [type, qty, limit, offset]);
+
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM tb_donasi d 
+      WHERE d.type = ? OR d.qty = ?
+    `;
+    const [countResult] = await pool.execute(countQuery, [type, qty]);
+    const total = countResult[0].total;
+
+    return {
+      data: rows.map(row => ({
+        ...row,
+        status: row.status ? JSON.parse(row.status) : null
+      })),
+      pagination: {
+        current_page: page,
+        total_pages: Math.ceil(total / limit),
+        total_items: total,
+        limit: limit
+      }
+    };
+  }
+
+  // Mendapatkan riwayat donasi berdasarkan status validasi
+  static async getRiwayatByStatus(status, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const query = `
+      SELECT 
+        d.*,
+        JSON_OBJECT(
+          'id', v.id,
+          'id_donasi', v.id_donasi,
+          'bukti_pembayaran', v.bukti_pembayaran,
+          'catatan_validasi', v.catatan_validasi,
+          'status_validasi', v.status,
+          'validator', v.validator,
+          'created_at', v.created_at
+        ) as status
+      FROM tb_donasi d 
+      LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi 
+      WHERE v.status = ?
+      ORDER BY d.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    const [rows] = await pool.execute(query, [status, limit, offset]);
+
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM tb_donasi d 
+      LEFT JOIN tb_validasi_donasi v ON d.id = v.id_donasi 
+      WHERE v.status = ?
+    `;
+    const [countResult] = await pool.execute(countQuery, [status]);
+    const total = countResult[0].total;
+
+    return {
+      data: rows.map(row => ({
+        ...row,
+        status: row.status ? JSON.parse(row.status) : null
+      })),
+      pagination: {
+        current_page: page,
+        total_pages: Math.ceil(total / limit),
+        total_items: total,
+        limit: limit
+      }
+    };
+  }
+
 }
+
 
 module.exports = DonasiModel;

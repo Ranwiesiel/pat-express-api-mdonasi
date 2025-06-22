@@ -2,7 +2,7 @@ const { pool } = require('../config/db');
 
 class AksesApiModel {
   // Mendapatkan riwayat akses API dengan filter dan pagination
-  static async getAll(page = 1, limit = 10, method = null, status_code = null) {
+  static async getAll(page = 1, limit = 10, method = null, status_code = null, start_date = null, end_date = null) {
     const offset = (page - 1) * limit;
     let query = 'SELECT * FROM tb_akses_api WHERE 1=1';
     let queryParams = [];
@@ -15,6 +15,14 @@ class AksesApiModel {
     if (status_code) {
       query += ' AND status_code = ?';
       queryParams.push(status_code);
+    }
+    if (start_date) {
+      query += ' AND created_at >= ?';
+      queryParams.push(`${start_date} 00:00:00`);
+    }
+    if (end_date) {
+      query += ' AND created_at <= ?';
+      queryParams.push(`${end_date} 23:59:59`);
     }
 
     query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
@@ -50,7 +58,7 @@ class AksesApiModel {
     };
   }
 
-  // Menyimpan log akses API
+  // Menyimpan log akses API baru dalam tabel
   static async create(aksesData) {
     const { endpoint, method, ip_address, user_agent, status_code, response_time } = aksesData;
     const query = `

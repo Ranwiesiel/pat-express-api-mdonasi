@@ -1,5 +1,54 @@
 # API Dokumentasi MDonasi
 
+## Table of Contents / Navigation
+
+- [Deskripsi](#deskripsi)
+- [Base URL](#base-url)
+- [ERD](#erd)
+- [Endpoints](#endpoints)
+  - [Manajemen Donasi](#manajemen-donasi)
+    - [1. Membuat Donasi Baru](#1-membuat-donasi-baru)
+    - [2. Mendapatkan Daftar Donasi](#2-mendapatkan-daftar-donasi)
+    - [3. Mendapatkan Donasi Berdasarkan ID](#3-mendapatkan-donasi-berdasarkan-id)
+    - [4. Mendapatkan Donasi Berdasarkan Type donasi](#4-mendapatkan-donasi-berdasarkan-type-donasi)
+    - [5. Mendapatkan Donasi Berdasarkan Status Donasi](#5-mendapatkan-donasi-berdasarkan-status-donasi)
+    - [6. Mendapatkan Donasi Berdasarkan ID User](#6-mendapatkan-donasi-berdasarkan-id-user)
+    - [7. Menghapus Data Donasi](#7-menghapus-data-donasi)
+    - [8. Mengubah data donasi](#8-mengubah-data-donasi)
+  - [Validasi Donasi](#validasi-donasi)
+    - [1. Donatur Membuat Validasi Donasi](#1-donatur-membuat-validasi-donasi)
+    - [2. Admin memvalidasi donasi](#2-admin-memvalidasi-donasi)
+    - [3. Volunteer mengambil donasi](#3-volunteer-mengambil-donasi-dan-mengubah-status-validasi-donasi-menjadi-taken)
+    - [4. Mendapatkan Detail Validasi Donasi](#4-mendapatkan-detail-validasi-donasi)
+    - [5. Backend only not public usable - membuat validasi](#5-backend-only-create-data-validasi)
+  - [Riwayat Donasi](#riwayat-donasi)
+    - [1. Mendapatkan Semua Riwayat Donasi (Admin)](#1-mendapatkan-semua-riwayat-donasi-admin)
+    - [2. Mendapatkan Riwayat Donasi Berdasarkan ID User](#2-mendapatkan-riwayat-donasi-berdasarkan-id-user)
+    - [3. Mendapatkan Riwayat Donasi Berdasarkan Type dan Qty](#3-mendapatkan-riwayat-donasi-berdasarkan-type-dan-qty)
+    - [4. Mendapatkan Riwayat Donasi Berdasarkan Status](#4-mendapatkan-riwayat-donasi-berdasarkan-status)
+  - [Riwayat Akses API](#riwayat-akses-api)
+    - [1. Mendapatkan Riwayat Akses API](#1-mendapatkan-riwayat-akses-api)
+- [Status Kode](#status-kode)
+- [Status Donasi](#status-donasi)
+- [Struktur Database](#struktur-database)
+  - [Tabel tb_donasi](#tabel-tb_donasi)
+  - [Tabel tb_validasi_donasi](#tabel-tb_validasi_donasi)
+  - [Tabel tb_akses_api](#tabel-tb_akses_api)
+
+
+## PERUBAHAN TERBARU [penting]
+```
+1. Perubahan pada endpoint validasi donasi, sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id_donasi pada body , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan
+
+2. Sekarang saat donatur membuat donasi, otomatis membuat validasi donasi, jadi tidak perlu lagi membuat validasi donasi secara terpisah, cukup buat donasi saja, dan donasi akan otomatis dibuatkan validasinya dan satusnya akan need validation, dan donatur bisa mengirimkan bukti pembayaran pada endpoint validasi donasi maka statusnya akan menjadi pending, dan admin bisa memvalidasi donasi tersebut dengan status accepted atau rejected, jika diterima maka status donasi akan menjadi success, jika ditolak maka status donasi akan menjadi failed
+
+3. Perubahan pada endpoint validasi donasi, sekarang volunteer bisa mengambil donasi yang sudah di accepted dan mengubah status validasi donasi menjadi taken, jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
+
+4. Perubahan pada endpoint untuk kirim bukti donasi sekarang menggunakan method PUT/PATCH , dikarenakan sekarang data validasi akan dibuat otomatis saat membuat donasi, jaadi saat mengirim bukti donasi, data akan diubah menjadi pending untuk di cek admin
+
+5. Penambahan pada endpoint GET riwayat donasi bisa dilakukan pencarian dengan params dari userId, type (type donasinya bisa uang, barang, dll), qty (jumlah nominal donasi bisa 78 jika barang dan 58000 jika uang), dan status (status donasinya)
+```
+
 ## Deskripsi
 
 API ini memungkinkan pengguna untuk mengelola transaksi donasi pada tabel donasi. API ini menyediakan endpoint untuk membuat, melihat, mengubah, dan menghapus data donasi, serta fitur untuk validasi donasi, riwayat donasi, dan melacak riwayat akses API.
@@ -398,17 +447,21 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 
 ### Validasi Donasi
 
+perhatikan perubahan sistem validasi donasi, endpoint sekarang tidak mengambil id dari path, tapi sekarang membutuhkan id donasi , mohon maaf untuk yang menggunakan sebelumnya, karena ada permintaan perbaikan 
+
+donatur membuat validasi sekarang dengan method **PUT** karena data validasi otomatis ada saat membuat donasi
+
 #### 1. Donatur Membuat Validasi Donasi
 
-- **Method:** POST
-- **Path:** `/validasi-donasi/{idDonasi}`
+- **Method:** PUT
+- **Path:** `/validasi-donasi/kirimbukti`
 - **Content-Type:** application/json
 
 ##### Request Body
 
 ```json
 {
-  "id_donasi": 1,
+  "id_donasi": 50,
   "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
   "catatan_validasi": "Pembayaran sudah masuk"
 }
@@ -421,48 +474,46 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 
 ```json
 {
-  "success": true,
-  "message": "Validasi donasi berhasil dibuat",
-  "data": {
-    "id": 1,
-    "id_donasi": 1,
-    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-    "catatan_validasi": "Pembayaran sudah masuk",
-    "status_validasi": "pending",
-    "validator": "Admin",
-    "created_at": "2025-05-21T16:30:00.000Z"
+    {
+    "success": true,
+    "message": "Berhasil dikirim bukti validasi",
+    "data": {
+      "id": 50,
+      "id_donasi": 50,
+      "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
+      "catatan_validasi": "Pembayaran sudah masuk",
+      "status_validasi": "pending",
+      "validator": "",
+      "created_at": "2025-05-28T06:35:52.000Z",
+      "donasi": {
+        "id": 50,
+        "userid": 19,
+        "type": "barang",
+        "qty": 24,
+        "unit": "kotak",
+        "keterangan": "Baju bekas banget",
+        "status": "pending"
+      }
+    }
   }
 }
 
-{
-  "success": true,
-  "message": "Validasi donasi berhasil dibuat",
-  "data": {
-    "id": 1,
-    "id_donasi": 1,
-    "bukti_pembayaran": "https://example.com/bukti-transfer.jpg",
-    "catatan_validasi": "Pembayaran sudah masuk",
-    "status_validasi": "accepted",
-    "validator": "Admin",
-    "created_at": "2025-06-21T16:30:00.000Z"
-  }
-}
 ```
 
 #### 2. Admin memvalidasi donasi
 
 - **Method:** PUT
-- **Path:** `/validasi-donasi/admin/{idDonasi}`
+- **Path:** `/validasi-donasi/admin/validasibyadmin`
 - **Content-Type:** application/json
 
 ##### Request Body
 
 ```json
 {
-  "id_validasi": "{id_validasi}",
+  "id_donasi": 1,
   "status_validasi": "accepted / rejected",
   "catatan_validasi": "Pembayaran sudah dikonfirmasi",
-  "validator": "Admin"
+  "validator": "Admin ronggo"
 }
 ```
 
@@ -489,18 +540,20 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 #### 3. Volunteer mengambil donasi dan mengubah status validasi donasi menjadi taken
 
 - **Method:** PUT
-- **Path:** `/validasi-donasi/volunteer/{idDonasi}`
+- **Path:** `/validasi-donasi/volunteer/takedonasi`
 
 ```json
 {
+  "id_donasi": 1,
   "status_validasi": "taken",
   "catatan_validasi": "Donasi sudah diambil oleh PT blabla",
   "validator": "PT BLABLA"
 }
 ```
-##### Jika cancel donasi taken
+##### Jika cancel donasi taken ubah lagi status validasi donasi menjadi accepted
 ```json
 {
+  "id_donasi": 1,
   "status_validasi": "accepted", 
   "catatan_validasi": "Donasi tidak jadi diambil oleh PT blabla",
   "validator": "PT BLABLA"
@@ -536,7 +589,54 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 #### 4. Mendapatkan Detail Validasi Donasi
 
 - **Method:** GET
-- **Path:** `/validasi-donasi/{idDonasi}`
+- **Path:** `/validasi-donasi/detaildonasi`
+
+```json
+{
+  "id_donasi": 1,
+}
+```
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Validasi donasi berhasil dibuat",
+  "data": {
+    "id": 1,
+    "id_donasi": 1,
+    "bukti_pembayaran": "g",
+    "catatan_validasi": "",
+    "status_validasi": "need_validation",
+    "validator": "",
+    "created_at": "2025-05-21T16:30:00.000Z",
+    "donasi": {
+      "id": 1,
+      "userid": 1,
+      "type": "uang",
+      "qty": 100000,
+      "unit": "rupiah",
+      "keterangan": "Semoga bermanfaat",
+      "status": "success"
+    }
+  }
+}
+```
+
+#### 5. [Backend Only] Create data validasi
+
+- **Method:** POST
+- **Path:** `/validasi-donasi/createvalidasi`
+
+```json
+{
+  "id_donasi": 1,
+}
+```
 
 ##### Response Success
 
@@ -567,6 +667,7 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
   }
 }
 ```
+
 
 ### Riwayat Donasi
 
@@ -686,7 +787,7 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 #### 2. Mendapatkan Riwayat Donasi Berdasarkan ID User
 
 - **Method:** GET
-- **Path:** `/riwayat-donasi/{userId}`
+- **Path:** `/riwayat-donasi?userId={userid}`
 
 ##### Response Success
 
@@ -696,7 +797,7 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
 ```json
 {
   "success": true,
-  "message": "Riwayat donasi berhasil diambil",
+  "message": "Riwayat donasi berdasarkan userId berhasil diambil",
   "userid" : 1,
   "data": [
     {
@@ -737,6 +838,150 @@ Hanya **Admin dan User** tersebut yang bisa membuat donasi. <br>
     }
   ]
 }
+```
+#### 3. Mendapatkan Riwayat Donasi Berdasarkan Type dan Qty
+
+- **Method:** GET
+- **Path:** `/riwayat-donasi?type={tipe}&qty={jumlah}`
+
+##### Query Parameters
+- `type` (opsional): Jenis donasi (misal: uang, barang)
+- `qty` (opsional): Jumlah donasi (angka)
+- `page` (opsional): Halaman yang ingin ditampilkan (default: 1)
+- `limit` (opsional): Jumlah data per halaman (default: 10)
+
+```
+Catatan: Parameter type dan qty dapat digunakan bersamaan atau salah satu saja.
+```
+##### Contoh:
+- Get berdasarkan type: `/riwayat-donasi?type=barang`
+- Get berdasarkan qty:`/riwayat-donasi?type&qty=10`
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Riwayat donasi berdasarkan type atau qty berhasil diambil",
+  "data": [
+    {
+        "id": 50,
+        "userid": 19,
+        "type": "barang",
+        "qty": 24,
+        "unit": "kotak",
+        "keterangan": "Baju bekas banget",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-06-08T14:05:37.000Z",
+        "status": {
+            "id": 50,
+            "id_donasi": 50,
+            "bukti_pembayaran": "https://dummyimage.com/bukti50.jpg",
+            "catatan_validasi": "tolong di validasi",
+            "status_validasi": "pending",
+            "validator": "",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    },
+    {
+        "id": 24,
+        "userid": 23,
+        "type": "barang",
+        "qty": 9,
+        "unit": "karung",
+        "keterangan": "Baju bekas",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-05-28T07:41:04.000Z",
+        "status": {
+            "id": 24,
+            "id_donasi": 24,
+            "bukti_pembayaran": "https://dummyimage.com/bukti24.jpg",
+            "catatan_validasi": "Perlu pengecekan ulang",
+            "status_validasi": "need_validation",
+            "validator": "admin1",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 1,
+    "total_items": 1,
+    "limit": 10
+  }
+}
+
+```
+
+#### 4. Mendapatkan Riwayat Donasi Berdasarkan Status 
+
+- **Method:** GET
+- **Path:** `/riwayat-donasi?status={status}`
+
+##### Query Parameters
+- `page` (opsional): Halaman yang ingin ditampilkan (default: 1)
+- `limit` (opsional): Jumlah data per halaman (default: 10)
+
+##### Response Success
+
+- **Status Code:** 200 OK
+- **Content-Type:** application/json
+
+```json
+{
+  "success": true,
+  "message": "Riwayat donasi berdasarkan status berhasil diambil",
+  "data": [
+    {
+        "id": 9,
+        "userid": 29,
+        "type": "barang",
+        "qty": 63,
+        "unit": "karung",
+        "keterangan": "Baju bekas",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-05-28T07:41:04.000Z",
+        "status": {
+            "id": 9,
+            "id_donasi": 9,
+            "bukti_pembayaran": "https://dummyimage.com/bukti9.jpg",
+            "catatan_validasi": "Perlu pengecekan ulang",
+            "status_validasi": "pending",
+            "validator": "admin1",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    },
+    {
+        "id": 39,
+        "userid": 26,
+        "type": "uang",
+        "qty": 66000,
+        "unit": "rupiah",
+        "keterangan": "Untuk anak yatim",
+        "created_at": "2025-05-28T06:35:52.000Z",
+        "updated_at": "2025-05-28T07:41:04.000Z",
+        "status": {
+            "id": 39,
+            "id_donasi": 39,
+            "bukti_pembayaran": "https://dummyimage.com/bukti39.jpg",
+            "catatan_validasi": "Valid dan lengkap",
+            "status_validasi": "pending",
+            "validator": "admin3",
+            "created_at": "2025-05-28 13:35:52"
+        }
+    }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "total_pages": 1,
+    "total_items": 1,
+    "limit": 10
+  }
+}
+
 ```
 
 ### Riwayat Akses API

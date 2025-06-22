@@ -36,6 +36,19 @@ class ValidasiDonasiModel {
     return result.affectedRows > 0;
   }
 
+  static async kirimBukti(id_donasi, validasiData) {
+    const { status_validasi, bukti_pembayaran ,catatan_validasi, validator } = validasiData;
+    
+    const query = `
+      UPDATE tb_validasi_donasi 
+      SET status = ?, bukti_pembayaran = ?, catatan_validasi = ? , validator = ?, updated_at = NOW()
+      WHERE id_donasi = ?
+    `;
+    
+    const [result] = await pool.execute(query, [status_validasi, bukti_pembayaran, catatan_validasi, validator, id_donasi]);
+    return result.affectedRows > 0;
+  }
+
   // Mendapatkan detail validasi berdasarkan ID donasi
   static async getByDonasiId(id_donasi) {
     const query = `
