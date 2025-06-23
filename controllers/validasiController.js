@@ -127,7 +127,9 @@ class ValidasiController {
             console.error('Error updating validasi by admin:', error);
             res.status(500).json(errorResponse('Terjadi kesalahan server'));
         }
-    }    static async validateDonasiVolunteer(req, res) {
+    }    
+    
+    static async validateDonasiVolunteer(req, res) {
         try {
             const idDonasi = req.body.id_donasi;
             

@@ -15,7 +15,7 @@ class ValidasiDonasiModel {
 
     const query = `
       INSERT INTO tb_validasi_donasi (id_donasi, bukti_pembayaran, catatan_validasi, status, created_at, updated_at)
-      VALUES (?, ?, ?, 'pending', NOW(), NOW())
+      VALUES (?, ?, ?, 'need_validation', NOW(), NOW())
     `;
     
     const [result] = await pool.execute(query, [id_donasi, bukti_pembayaran, catatan_validasi]);
@@ -54,7 +54,8 @@ class ValidasiDonasiModel {
     const query = `
       SELECT 
         v.*,
-        d.userid, d.type, d.qty, d.unit, d.keterangan, d.created_at as donasi_created_at
+        d.userid, d.type, d.qty, d.unit, d.keterangan, d.created_at as donasi_created_at,
+        DATEDIFF(NOW(), d.created_at) as durasi_hari
       FROM tb_validasi_donasi v
       JOIN tb_donasi d ON v.id_donasi = d.id
       WHERE v.id_donasi = ?
@@ -82,7 +83,9 @@ class ValidasiDonasiModel {
         qty: row.qty,
         unit: row.unit,
         keterangan: row.keterangan,
-        status: row.status
+        status: row.status,
+        created_at: row.donasi_created_at,
+        durasi_hari: row.durasi_hari
       }
     };
   }
